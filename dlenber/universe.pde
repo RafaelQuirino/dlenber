@@ -222,7 +222,7 @@ class Universe {
     this.grid.updateRotation(axis,dir,this.dr);
     this.axis.updateRotation(axis,dir,this.dr);
     for (int i = 0; i < this.numObjects; i++)
-      this.objects[i].updateRotation(axis,dir,this.dr);
+      this.objects[i].updateRotationUniverse(axis,dir,this.dr);
   }
 
   void updateScale (Axis axis, Direction dir, float factor) {
@@ -253,7 +253,7 @@ class Universe {
     this.grid.updateScale(axis,dir,this.ds);
     this.axis.updateScale(axis,dir,this.ds);
     for (int i = 0; i < this.numObjects; i++)
-      this.objects[i].updateScale(axis,dir,this.ds);
+      this.objects[i].updateScaleUniverse(axis,dir,this.ds);
   }
 
   void updateTranslation(Axis axis, Direction dir, float distance) {
@@ -283,7 +283,7 @@ class Universe {
     this.grid.updateTranslation(axis,dir,this.dt);
     this.axis.updateTranslation(axis,dir,this.dt);
     for (int i = 0; i < this.numObjects; i++)
-      this.objects[i].updateTranslation(axis,dir,this.dt);
+      this.objects[i].updateTranslationUniverse(axis,dir,this.dt);
   }
 
   void update (Projection proj) {
