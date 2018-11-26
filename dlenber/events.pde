@@ -10,7 +10,7 @@ enum Keys {
   // Transformations in relations to the Universe
   z(31), x(32), c(33), v(34), b(35), n(36),
   // Selecting objects
-  tab(37), shift(38);
+  tab(37), shift(38), ctrl(39);
 
   private final int value;
   Keys(final int newValue) {
@@ -70,9 +70,14 @@ void run_events (Universe universe) {
       universe.objects[i].initStates();
   }
 
-  if (keys[Keys.plus.id()])  obj.scale(Axis.ALL_3, Direction.POSITIVE);
-  if (keys[Keys.minus.id()]) obj.scale(Axis.ALL_3, Direction.NEGATIVE);
-
+  if (keys[Keys.ctrl.id()]) {
+    if (keys[Keys.plus.id()])  universe.scale(Axis.ALL_3, Direction.POSITIVE);
+    if (keys[Keys.minus.id()]) universe.scale(Axis.ALL_3, Direction.NEGATIVE);
+  }
+  else {
+    if (keys[Keys.plus.id()])  obj.scale(Axis.ALL_3, Direction.POSITIVE);
+    if (keys[Keys.minus.id()]) obj.scale(Axis.ALL_3, Direction.NEGATIVE);
+  }
   // Universe Transformations
   // if (keys[Keys.z.id()]) universe.translate(Axis.Z,Direction.POSITIVE);
   // if (keys[Keys.x.id()]) universe.translate(Axis.Z,Direction.NEGATIVE);
@@ -190,6 +195,7 @@ void key_down (boolean[] keys, char key) {
   // if (key == TAB) keys[Keys.tab.id()]   = true;
   if (key == TAB) universe.selectNext();
   if (key == CODED) {
+    if (keyCode == CONTROL) keys[Keys.ctrl.id()] = true;
     // if (keyCode == SHIFT) keys[Keys.shift.id()] = true;
     // if (keyCode == SHIFT) universe.selectPrevious();
   }
@@ -239,9 +245,10 @@ void key_up (boolean[] keys, char key) {
   if (key == 'n' || key == 'N') keys[Keys.n.id()] = false;
 
   // if (key == TAB) keys[Keys.tab.id()]   = false;
-  // if (key == CODED) {
-  //   if (keyCode == SHIFT) keys[Keys.shift.id()] = false;
-  // }
+  if (key == CODED) {
+    if (keyCode == CONTROL) keys[Keys.ctrl.id()] = false;
+    // if (keyCode == SHIFT) keys[Keys.shift.id()] = false;
+  }
 }
 
 //==============================================================================
