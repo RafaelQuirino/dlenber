@@ -17,7 +17,7 @@ String[] proj_strings = {
 
 void init_gui () {
   fill_color = WHITE;
-  back_color = BLACK;
+  back_color = BLENDER_DARK_GRAY;//BLACK;
   font = createFont("Arial", 14, true);
 
   axis_box = new Checkbox(26,470,"Mostrar eixos",0);

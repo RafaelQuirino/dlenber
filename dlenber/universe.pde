@@ -204,7 +204,7 @@ class Universe {
     };
 
     this.grid = new Object3D(points,lines);
-    this.grid.setColor(DARK_GRAY);
+    this.grid.setColor(BLENDER_LIGHT_GRAY);
   }
 
   void createGizmos () {
