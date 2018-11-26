@@ -330,13 +330,13 @@ class Universe {
 
   Object3D[] importFigure (String filename) {
     String[] strlines = read_file(filename);
-    double xmin = 0, xmax = 0, ymin = 0, ymax = 0;
 
     int NAME = 0, PLF_SIZES = 1, P = 2, L = 3, F = 4, ROT = 5, SC = 6, TR = 7;
     int step = NAME;
 
     Object3D objects[] = new Object3D[1];
     String name = "";
+    double xmin = 0, xmax = 0, ymin = 0, ymax = 0;
     int num_objects = 0, sizep = 0, sizel = 0, sizef = 0;
     int curr_object = 0, count = 0;
     float points[][] = new float[1][4];
