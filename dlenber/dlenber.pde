@@ -9,13 +9,18 @@ void setup () {
   init_gui();
   init_events();
   projection = Projection.CAVALIER;
+  // projection = Projection.PERSPECTIVE_1;
+
   universe = new Universe (
     -100,  100,
     -100,  100,
     -100,  100,
     width, height
   );
-  universe.addObject(universe.getCube());
+
+  Object3D objects[] = universe.importFigure("figure.dat");
+  for (int i = 0; i < objects.length; i++)
+    universe.addObject(objects[i]);
 }
 
 void draw () {
