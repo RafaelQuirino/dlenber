@@ -200,6 +200,16 @@ void print_mat (float[][] mat) {
   print("\n");
 }
 
+void print_mat (int[][] mat) {
+  for (int i = 0; i < mat.length; i++) {
+    for (int j = 0; j < mat[0].length; j++) {
+      print(mat[i][j] + "\t\t");
+    }
+    print("\n");
+  }
+  print("\n");
+}
+
 void print_font (String str, PFont font, int x, int y, color c) {
   fill(c);
   textAlign(TOP);
@@ -221,4 +231,9 @@ Projection get_next_proj (Projection proj) {
     p = Projection.CAVALIER;
   }
   return p;
+}
+
+String[] read_file (String filename) {
+  String[] lines = loadStrings(filename);
+  return lines;
 }
