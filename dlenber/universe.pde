@@ -527,10 +527,12 @@ class Universe {
           tz = scanner.nextFloat();
 
           Object3D obj_aux = new Object3D(points,lines);
-          obj_aux.setStates(rx,ry,rz,sx,sy,sz,tx,ty,tz);
+          obj_aux.setStates(rx,ry,rz,sx,sy,sz,0,0,0);
           obj_aux.transform();
 
-          objects[curr_object++] = new Object3D(obj_aux.points,obj_aux.lines);
+          Object3D obj = new Object3D(obj_aux.points,obj_aux.lines);
+          obj.tx = tx; obj.ty = ty; obj.tz = tz;
+          objects[curr_object++] = obj;
 
           step = NAME;
         }
