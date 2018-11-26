@@ -35,8 +35,8 @@ class Universe {
   {
     this.config = new Config(minX,maxX,minY,maxY,minZ,maxZ,myWidth,myHeight);
 
-    this.fx = this.config.minX * 100.0f;
-    this.fz = this.config.minZ * 100.0f;
+    this.fx = this.config.minX * 10.0f;
+    this.fz = this.config.minZ * 10.0f;
 
     this.showAxis = true;
     this.showGrid = true;
