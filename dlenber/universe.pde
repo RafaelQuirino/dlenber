@@ -322,105 +322,6 @@ class Universe {
       this.objects[i].reset();
   }
 
-
-
-  // Static object created for demonstration purpose
-  Object3D getCube () {
-    float[][] points = {
-      {-1, -1,  1, 1},
-      { 1, -1,  1, 1},
-      { 1,  1,  1, 1},
-      {-1,  1,  1, 1},
-      {-1, -1, -1, 1},
-      { 1, -1, -1, 1},
-      { 1,  1, -1, 1},
-      {-1,  1, -1, 1}
-    };
-
-    int[][] lines = {
-      {0,1},
-      {1,2},
-      {2,3},
-      {3,0},
-      {0,4},
-      {1,5},
-      {2,6},
-      {3,7},
-      {4,5},
-      {5,6},
-      {6,7},
-      {7,4}
-    };
-
-    int[] face1 = {};
-    int[] face2 = {};
-    int[] face3 = {};
-    int[] face4 = {};
-    int[] face5 = {};
-    int[] face6 = {};
-
-    Face[] faces = {
-      //TODO
-    };
-
-    Object3D cube_aux = new Object3D(points,lines);
-    cube_aux.sx = 25;
-    cube_aux.sy = 25;
-    cube_aux.sz = 25;
-    cube_aux.tx = 120;
-    cube_aux.ty = 120;
-    cube_aux.tz = 100;
-
-    Object3D cube = new Object3D(cube_aux.points,cube_aux.lines);
-
-    return cube;
-  }
-
-  Object3D getPyramid () {
-    float[][] points = {
-      {-1, -1,  1, 1},
-      { 1, -1,  1, 1},
-      { 1, -1, -1, 1},
-      {-1, -1, -1, 1},
-      { 0,  1,  0, 1}
-    };
-
-    int[][] lines = {
-      {0,1},
-      {1,2},
-      {2,3},
-      {3,0},
-      {0,4},
-      {1,4},
-      {2,4},
-      {3,4}
-    };
-
-    int[] face1 = {};
-    int[] face2 = {};
-    int[] face3 = {};
-    int[] face4 = {};
-    int[] face5 = {};
-
-    Face[] faces = {
-      //TODO
-    };
-
-    Object3D pyramid_aux = new Object3D(points,lines);
-    pyramid_aux.ry = 90;
-    pyramid_aux.sx = 40;
-    pyramid_aux.sy = 40;
-    pyramid_aux.sz = 40;
-    pyramid_aux.tx = 20;
-    pyramid_aux.ty = 20;
-    pyramid_aux.tz = 20;
-    pyramid_aux.transform();
-
-    Object3D pyramid = new Object3D(pyramid_aux.points,pyramid_aux.lines);
-
-    return pyramid;
-  }
-
   Object3D[] importFigure (String filename) {
     String[] strlines = read_file(filename);
     double xmin = 0, xmax = 0, ymin = 0, ymax = 0;
@@ -552,5 +453,102 @@ class Universe {
       this.selectedObject = this.numObjects-1;
     else
       this.selectedObject = this.selectedObject-1;
+  }
+
+  // Static object created for demonstration purpose
+  Object3D getCube () {
+    float[][] points = {
+      {-1, -1,  1, 1},
+      { 1, -1,  1, 1},
+      { 1,  1,  1, 1},
+      {-1,  1,  1, 1},
+      {-1, -1, -1, 1},
+      { 1, -1, -1, 1},
+      { 1,  1, -1, 1},
+      {-1,  1, -1, 1}
+    };
+
+    int[][] lines = {
+      {0,1},
+      {1,2},
+      {2,3},
+      {3,0},
+      {0,4},
+      {1,5},
+      {2,6},
+      {3,7},
+      {4,5},
+      {5,6},
+      {6,7},
+      {7,4}
+    };
+
+    int[] face1 = {};
+    int[] face2 = {};
+    int[] face3 = {};
+    int[] face4 = {};
+    int[] face5 = {};
+    int[] face6 = {};
+
+    Face[] faces = {
+      //TODO
+    };
+
+    Object3D cube_aux = new Object3D(points,lines);
+    cube_aux.sx = 25;
+    cube_aux.sy = 25;
+    cube_aux.sz = 25;
+    cube_aux.tx = 120;
+    cube_aux.ty = 120;
+    cube_aux.tz = 100;
+
+    Object3D cube = new Object3D(cube_aux.points,cube_aux.lines);
+
+    return cube;
+  }
+
+  Object3D getPyramid () {
+    float[][] points = {
+      {-1, -1,  1, 1},
+      { 1, -1,  1, 1},
+      { 1, -1, -1, 1},
+      {-1, -1, -1, 1},
+      { 0,  1,  0, 1}
+    };
+
+    int[][] lines = {
+      {0,1},
+      {1,2},
+      {2,3},
+      {3,0},
+      {0,4},
+      {1,4},
+      {2,4},
+      {3,4}
+    };
+
+    int[] face1 = {};
+    int[] face2 = {};
+    int[] face3 = {};
+    int[] face4 = {};
+    int[] face5 = {};
+
+    Face[] faces = {
+      //TODO
+    };
+
+    Object3D pyramid_aux = new Object3D(points,lines);
+    pyramid_aux.ry = 90;
+    pyramid_aux.sx = 40;
+    pyramid_aux.sy = 40;
+    pyramid_aux.sz = 40;
+    pyramid_aux.tx = 20;
+    pyramid_aux.ty = 20;
+    pyramid_aux.tz = 20;
+    pyramid_aux.transform();
+
+    Object3D pyramid = new Object3D(pyramid_aux.points,pyramid_aux.lines);
+
+    return pyramid;
   }
 }//class Universe
