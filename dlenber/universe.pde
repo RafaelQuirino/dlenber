@@ -58,6 +58,12 @@ class Universe {
     this.scaleUniverse = false;
   }
 
+  void printObjects () {
+    for (int i = 0; i < this.numObjects;i++) {
+      this.objects[i].printObject3D();
+    }
+  }
+
   void toggleTranslateUniverse() {
     this.translateUniverse = !this.translateUniverse;
   }
@@ -330,6 +336,7 @@ class Universe {
     int step = NAME;
 
     Object3D objects[] = new Object3D[1];
+    String name = "";
     int num_objects = 0, sizep = 0, sizel = 0, sizef = 0;
     int curr_object = 0, count = 0;
     float points[][] = new float[1][4];
@@ -366,7 +373,7 @@ class Universe {
         // Read an object from the figure
         if (step==NAME) {
           // Read name of object
-          // TODO
+          name = strlines[i];
           step = PLF_SIZES;
         }
         else if (step==PLF_SIZES) {
@@ -431,7 +438,7 @@ class Universe {
           obj_aux.setStates(rx,ry,rz,sx,sy,sz,0,0,0);
           obj_aux.transform();
 
-          Object3D obj = new Object3D(obj_aux.points,obj_aux.lines);
+          Object3D obj = new Object3D(name,obj_aux.points,obj_aux.lines,faces);
           obj.tx = tx; obj.ty = ty; obj.tz = tz;
           objects[curr_object++] = obj;
 
@@ -453,102 +460,5 @@ class Universe {
       this.selectedObject = this.numObjects-1;
     else
       this.selectedObject = this.selectedObject-1;
-  }
-
-  // Static object created for demonstration purpose
-  Object3D getCube () {
-    float[][] points = {
-      {-1, -1,  1, 1},
-      { 1, -1,  1, 1},
-      { 1,  1,  1, 1},
-      {-1,  1,  1, 1},
-      {-1, -1, -1, 1},
-      { 1, -1, -1, 1},
-      { 1,  1, -1, 1},
-      {-1,  1, -1, 1}
-    };
-
-    int[][] lines = {
-      {0,1},
-      {1,2},
-      {2,3},
-      {3,0},
-      {0,4},
-      {1,5},
-      {2,6},
-      {3,7},
-      {4,5},
-      {5,6},
-      {6,7},
-      {7,4}
-    };
-
-    int[] face1 = {};
-    int[] face2 = {};
-    int[] face3 = {};
-    int[] face4 = {};
-    int[] face5 = {};
-    int[] face6 = {};
-
-    Face[] faces = {
-      //TODO
-    };
-
-    Object3D cube_aux = new Object3D(points,lines);
-    cube_aux.sx = 25;
-    cube_aux.sy = 25;
-    cube_aux.sz = 25;
-    cube_aux.tx = 120;
-    cube_aux.ty = 120;
-    cube_aux.tz = 100;
-
-    Object3D cube = new Object3D(cube_aux.points,cube_aux.lines);
-
-    return cube;
-  }
-
-  Object3D getPyramid () {
-    float[][] points = {
-      {-1, -1,  1, 1},
-      { 1, -1,  1, 1},
-      { 1, -1, -1, 1},
-      {-1, -1, -1, 1},
-      { 0,  1,  0, 1}
-    };
-
-    int[][] lines = {
-      {0,1},
-      {1,2},
-      {2,3},
-      {3,0},
-      {0,4},
-      {1,4},
-      {2,4},
-      {3,4}
-    };
-
-    int[] face1 = {};
-    int[] face2 = {};
-    int[] face3 = {};
-    int[] face4 = {};
-    int[] face5 = {};
-
-    Face[] faces = {
-      //TODO
-    };
-
-    Object3D pyramid_aux = new Object3D(points,lines);
-    pyramid_aux.ry = 90;
-    pyramid_aux.sx = 40;
-    pyramid_aux.sy = 40;
-    pyramid_aux.sz = 40;
-    pyramid_aux.tx = 20;
-    pyramid_aux.ty = 20;
-    pyramid_aux.tz = 20;
-    pyramid_aux.transform();
-
-    Object3D pyramid = new Object3D(pyramid_aux.points,pyramid_aux.lines);
-
-    return pyramid;
   }
 }//class Universe

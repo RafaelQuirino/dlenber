@@ -21,6 +21,7 @@ void setup () {
   Object3D objects[] = universe.importFigure("figure.dat");
   for (int i = 0; i < objects.length; i++)
     universe.addObject(objects[i]);
+  universe.printObjects();
 }
 
 void draw () {

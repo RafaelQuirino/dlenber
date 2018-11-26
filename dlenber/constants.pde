@@ -7,8 +7,9 @@ color BLUE      = color(0,0,255);
 color YELLOW    = color(255,255,0);
 
 // Custom colors
-color BLENDER_LIGHT_GRAY = color(74,74,74); 
-color BLENDER_DARK_GRAY  = color(57,57,57); 
+color BLENDER_LIGHT_GRAY  = color(74,74,74); 
+color BLENDER_DARK_GRAY   = color(57,57,57);
+// color BLENDER_OBJECT_GRAY = color(?,?,?);
 
 enum Axis {
   X,

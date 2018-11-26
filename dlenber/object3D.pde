@@ -1,5 +1,7 @@
 class Object3D {
 
+  String name;
+
   private float[][] origPoints;
   float[][] projection;
 
@@ -55,6 +57,40 @@ class Object3D {
   Object3D (float[][] points, int[][] lines, Face[] faces) {
     this(points,lines);
     this.faces = faces;
+  }
+
+  Object3D (String name, float[][] points, int[][] lines, Face[] faces) {
+    this(points,lines,faces);
+    this.name = name;
+  }
+
+  void printObject3D () {
+    int n = 60;
+    for (int i = 0; i < n; i++) print("="); print("\n");
+    print("Object3D: "+this.name+"\n-----------");
+    for (int i = 0; i < this.name.length(); i++) print("-"); print("\n");
+    print("Points: \n");
+    for (int i = 0; i < this.points.length; i++) {
+      float[] p = this.points[i];
+      print("["+i+"]: ("+p[0]+","+p[1]+","+p[2]+")\n");
+    }
+    print("Lines: \n");
+    for (int i = 0; i < this.lines.length; i++) {
+      int[] l = this.lines[i];
+      print("["+i+"]: ("+l[0]+","+l[1]+")\n");
+    }
+    print("Faces: \n");
+    for (int i = 0; i < this.faces.length; i++) {
+      Face f = this.faces[i];
+      print("["+i+"]: "+"\tPoints: [ ");
+      for (int j = 0; j < f.listSize; j++) {
+        print(f.pointIndexes[j]+" ");
+      }
+      print("]\n");
+      print("\tColor : ("+f.r+","+f.g+","+f.b+")\n");
+      print("\tAvg Z : "+f.avgZ+"\n");
+    }
+    for (int i = 0; i < n; i++) print("="); print("\n");
   }
 
   void reset () {
