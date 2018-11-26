@@ -20,8 +20,8 @@ void init_gui () {
   back_color = BLACK;
   font = createFont("Arial", 14, true);
 
-  axis_box = new Checkbox(26,460,"Mostrar eixos",0);
-  grid_box = new Checkbox(26,490,"Mostrar piso",1);
+  axis_box = new Checkbox(26,470,"Mostrar eixos",0);
+  grid_box = new Checkbox(26,500,"Mostrar piso",1);
 
   translation_box = new Checkbox(26,300,"Translacao",2);
   rotation_box    = new Checkbox(26,330,"Rotacao",3);
@@ -65,19 +65,20 @@ void print_menu () {
   label += " Tranformacoes no objeto selecionado\n";
   label += " QE,AD,WS: Transladar \n";
   label += " RY,FH,TG: Rotacionar \n";
-  label += " UO,JL,IK: Escalonar (+,-: total) \n";
+  label += " UO,JL,IK: Escalonar (+,-: 3 eixos) \n";
 
   print_font(label,font,20,55,fill_color);
   print_font(proj_strings[p],font,135,120,YELLOW);
   print_font(".",font,22,30,fill_color);
   print_font("Transformacoes no Universo",font,22,270,fill_color);
   print_font("ZX,CV,BN",font,22,290,fill_color);
-  print_font("TAB: Selecionar objecto",font,22,400,fill_color);  
+  print_font("Ctrl+(+,-): Escalonar universo",font,22,400,fill_color);
+  print_font("TAB: Selecionar objeto",font,22,420,fill_color);
 }
 
 void print_checkboxes_label () {
   String label = "Configuracoes";
-  print_font(label,font,25,450,fill_color);
+  print_font(label,font,25,460,fill_color);
 }
 
 class Checkbox {
