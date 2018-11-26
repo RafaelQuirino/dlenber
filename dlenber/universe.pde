@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 class Universe {
   Config config;
   Object3D axis, grid;
@@ -12,6 +14,7 @@ class Universe {
   Object3D[] objects;
   int numObjects;
   int limit;
+  int selectedObject;
 
   // Current state of each transformation
   float rx, ry, rz;
@@ -41,6 +44,7 @@ class Universe {
     this.numObjects = 0;
     this.limit = 1024;
     this.objects = new Object3D[this.limit];
+    this.selectedObject = 0;
 
     createAxis();
     createGrid();
@@ -290,6 +294,9 @@ class Universe {
     this.axis.update(this.config,proj,this.fx,this.fz);
     this.grid.update(this.config,proj,this.fx,this.fz);
 
+    // print("this.numObjects: "+this.numObjects+"\n");
+    // print("this.objects.length: "+this.objects.length+"\n");
+
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].update(this.config,proj,this.fx,this.fz);
   }
@@ -299,8 +306,12 @@ class Universe {
     if (this.showGrid) this.grid.render();
     if (this.showAxis) this.axis.render();
 
-    for (int i = 0; i < this.numObjects; i++)
-      this.objects[i].render();
+    for (int i = 0; i < this.numObjects; i++) {
+      if (!(i == this.selectedObject))
+        this.objects[i].render();
+    }
+    // Selected object must be rendered last, to get "upon" the ohters
+    this.objects[this.selectedObject].renderColor(YELLOW);
   }
 
   void reset () {
@@ -316,31 +327,228 @@ class Universe {
   // Static object created for demonstration purpose
   Object3D getCube () {
     float[][] points = {
-      {-20,  20,  20, 1},
-      { 20,  20,  20, 1},
-      { 20,  20, -20, 1},
-      {-20,  20, -20, 1},
-      {-20, -20, -20, 1},
-      {-20, -20,  20, 1},
-      { 20, -20,  20, 1},
-      { 20, -20, -20, 1}
+      {-1, -1,  1, 1},
+      { 1, -1,  1, 1},
+      { 1,  1,  1, 1},
+      {-1,  1,  1, 1},
+      {-1, -1, -1, 1},
+      { 1, -1, -1, 1},
+      { 1,  1, -1, 1},
+      {-1,  1, -1, 1}
     };
 
     int[][] lines = {
-      {0, 1},
-      {1, 2},
-      {2, 3},
-      {3, 4},
-      {4, 5},
-      {5, 6},
-      {6, 7},
-      {7, 4},
-      {0, 3},
-      {0, 5},
-      {1, 6},
-      {2, 7}
+      {0,1},
+      {1,2},
+      {2,3},
+      {3,0},
+      {0,4},
+      {1,5},
+      {2,6},
+      {3,7},
+      {4,5},
+      {5,6},
+      {6,7},
+      {7,4}
     };
 
-    return new Object3D(points,lines);
+    int[] face1 = {};
+    int[] face2 = {};
+    int[] face3 = {};
+    int[] face4 = {};
+    int[] face5 = {};
+    int[] face6 = {};
+
+    Face[] faces = {
+      //TODO
+    };
+
+    Object3D cube_aux = new Object3D(points,lines);
+    cube_aux.sx = 25;
+    cube_aux.sy = 25;
+    cube_aux.sz = 25;
+    cube_aux.tx = 120;
+    cube_aux.ty = 120;
+    cube_aux.tz = 100;
+
+    Object3D cube = new Object3D(cube_aux.points,cube_aux.lines);
+
+    return cube;
   }
-}
+
+  Object3D getPyramid () {
+    float[][] points = {
+      {-1, -1,  1, 1},
+      { 1, -1,  1, 1},
+      { 1, -1, -1, 1},
+      {-1, -1, -1, 1},
+      { 0,  1,  0, 1}
+    };
+
+    int[][] lines = {
+      {0,1},
+      {1,2},
+      {2,3},
+      {3,0},
+      {0,4},
+      {1,4},
+      {2,4},
+      {3,4}
+    };
+
+    int[] face1 = {};
+    int[] face2 = {};
+    int[] face3 = {};
+    int[] face4 = {};
+    int[] face5 = {};
+
+    Face[] faces = {
+      //TODO
+    };
+
+    Object3D pyramid_aux = new Object3D(points,lines);
+    pyramid_aux.ry = 90;
+    pyramid_aux.sx = 40;
+    pyramid_aux.sy = 40;
+    pyramid_aux.sz = 40;
+    pyramid_aux.tx = 20;
+    pyramid_aux.ty = 20;
+    pyramid_aux.tz = 20;
+    pyramid_aux.transform();
+
+    Object3D pyramid = new Object3D(pyramid_aux.points,pyramid_aux.lines);
+
+    return pyramid;
+  }
+
+  Object3D[] importFigure (String filename) {
+    String[] strlines = read_file(filename);
+    double xmin = 0, xmax = 0, ymin = 0, ymax = 0;
+
+    int NAME = 0, PLF_SIZES = 1, P = 2, L = 3, F = 4, ROT = 5, SC = 6, TR = 7;
+    int step = NAME;
+
+    Object3D objects[] = new Object3D[1];
+    int num_objects = 0, sizep = 0, sizel = 0, sizef = 0;
+    int curr_object = 0, count = 0;
+    float points[][] = new float[1][4];
+    int lines[][] = new int[1][1];
+    Face faces[] = new Face[1];
+    float rx=0, ry=0, rz=0;
+    float sx=0, sy=0, sz=0;
+    float tx=0, ty=0, tz=0;
+
+    for (int i = 0; i < strlines.length; i++) {
+      Scanner scanner = new Scanner(strlines[i]);
+      if (i==0) {
+        // Read figure name
+        // TODO
+      }
+      else if (i==1) {
+        // Read universe config (Xmin Xmax Ymin Ymax)
+        // Not a good implementation, must fix...
+        xmin = scanner.nextFloat();
+        xmax = scanner.nextFloat();
+        ymin = scanner.nextFloat();
+        ymax = scanner.nextFloat();
+        this.config.minX = (int) xmin;
+        this.config.maxX = (int) xmax;
+        this.config.minY = (int) ymin;
+        this.config.maxY = (int) ymax;
+      }
+      else if (i==2) {
+        // Read number of objects
+        num_objects = scanner.nextInt();
+        objects = new Object3D[num_objects];
+      }
+      else {
+        // Read an object from the figure
+        if (step==NAME) {
+          // Read name of object
+          // TODO
+          step = PLF_SIZES;
+        }
+        else if (step==PLF_SIZES) {
+          // Read number of points, lines and faces
+          sizep = scanner.nextInt();
+          sizel = scanner.nextInt();
+          sizef = scanner.nextInt();
+          points = new float[sizep][4];
+          lines = new int[sizel][2];
+          faces = new Face[sizef];
+          step = P;
+        }
+        else if (step==P) {
+          points[count][0] = scanner.nextFloat();
+          points[count][1] = scanner.nextFloat();
+          points[count][2] = scanner.nextFloat();
+          points[count][3] = 1.0f;
+          if (++count==sizep) {
+            count = 0;
+            step = L;
+          }
+        }
+        else if (step==L) {
+          lines[count][0] = scanner.nextInt()-1;
+          lines[count][1] = scanner.nextInt()-1;
+          if (++count==sizel) {
+            count = 0;
+            step = F;
+          }
+        }
+        else if (step==F) {
+          int num_vertices = scanner.nextInt();
+          faces[count] = new Face();
+          for (int k=0; k<num_vertices; k++)
+            faces[count].addPointIndex(scanner.nextInt()-1);
+          faces[count].r = scanner.nextFloat();
+          faces[count].g = scanner.nextFloat();
+          faces[count].b = scanner.nextFloat();
+          if (++count==sizef) {
+            count = 0;
+            step = ROT;
+          }
+        }
+        else if (step==ROT) {
+          rx = scanner.nextFloat();
+          ry = scanner.nextFloat();
+          rz = scanner.nextFloat();
+          step = SC;
+        }
+        else if (step==SC) {
+          sx = scanner.nextFloat();
+          sy = scanner.nextFloat();
+          sz = scanner.nextFloat();
+          step = TR;
+        }
+        else if (step==TR) {
+          tx = scanner.nextFloat();
+          ty = scanner.nextFloat();
+          tz = scanner.nextFloat();
+
+          Object3D obj_aux = new Object3D(points,lines);
+          obj_aux.setStates(rx,ry,rz,sx,sy,sz,tx,ty,tz);
+          obj_aux.transform();
+
+          objects[curr_object++] = new Object3D(obj_aux.points,obj_aux.lines);
+
+          step = NAME;
+        }
+      }//else (if(i==0),if(i==1),if(i==2))else
+    }//for (int i = 0; i < strlines.length; i++)
+
+    return objects;
+
+  }//void importFigure (String filename)
+
+  void selectNext () {
+    this.selectedObject = (this.selectedObject+1)%this.numObjects;
+  }
+
+  void selectPrevious () {
+    if (this.selectedObject-1 < 0)
+      this.selectedObject = this.numObjects-1;
+    else
+      this.selectedObject = this.selectedObject-1;
+  }
+}//class Universe
