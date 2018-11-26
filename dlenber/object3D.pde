@@ -52,6 +52,11 @@ class Object3D {
     this.updateMatrices();
   }
 
+  Object3D (float[][] points, int[][] lines, Face[] faces) {
+    this(points,lines);
+    this.faces = faces;
+  }
+
   void reset () {
     this.points     = make_copy(this.origPoints);
     this.projection = make_copy(this.origPoints);
@@ -421,6 +426,23 @@ class Object3D {
         (int) x1,
         (int) y1,
         this.lineColors[i]
+      );
+    }
+  }
+
+  void renderColor (color thecolor) {
+    for (int i = 0; i < this.lines.length; i++) {
+      float x0 = this.projection[this.lines[i][0]][0];
+      float y0 = this.projection[this.lines[i][0]][1];
+      float x1 = this.projection[this.lines[i][1]][0];
+      float y1 = this.projection[this.lines[i][1]][1];
+
+      lin_bres(
+        (int) x0,
+        (int) y0,
+        (int) x1,
+        (int) y1,
+        thecolor
       );
     }
   }

@@ -8,7 +8,9 @@ enum Keys {
   six(23), seven(24), eight(25), nine(26), zero(27),
   p(28), plus(29), minus(30),
   // Transformations in relations to the Universe
-  z(31), x(32), c(33), v(34), b(35), n(36);
+  z(31), x(32), c(33), v(34), b(35), n(36),
+  // Selecting objects
+  tab(37), shift(38), ctrl(39);
 
   private final int value;
   Keys(final int newValue) {
@@ -32,7 +34,7 @@ void init_events () {
 
 void run_events (Universe universe) {
 
-  Object3D obj = universe.objects[0];
+  Object3D obj = universe.objects[universe.selectedObject];
   Config config = universe.config;
 
   if (keys[Keys.q.id()]) obj.translate(Axis.Z,Direction.POSITIVE);
@@ -64,12 +66,18 @@ void run_events (Universe universe) {
 
   if (keys[Keys.zero.id()]) {
     universe.initStates();
-    obj.initStates();
+    for (int i = 0; i < universe.numObjects; i++)
+      universe.objects[i].initStates();
   }
 
-  if (keys[Keys.plus.id()])  obj.scale(Axis.ALL_3, Direction.POSITIVE);
-  if (keys[Keys.minus.id()]) obj.scale(Axis.ALL_3, Direction.NEGATIVE);
-
+  if (keys[Keys.ctrl.id()]) {
+    if (keys[Keys.plus.id()])  universe.scale(Axis.ALL_3, Direction.POSITIVE);
+    if (keys[Keys.minus.id()]) universe.scale(Axis.ALL_3, Direction.NEGATIVE);
+  }
+  else {
+    if (keys[Keys.plus.id()])  obj.scale(Axis.ALL_3, Direction.POSITIVE);
+    if (keys[Keys.minus.id()]) obj.scale(Axis.ALL_3, Direction.NEGATIVE);
+  }
   // Universe Transformations
   // if (keys[Keys.z.id()]) universe.translate(Axis.Z,Direction.POSITIVE);
   // if (keys[Keys.x.id()]) universe.translate(Axis.Z,Direction.NEGATIVE);
@@ -134,6 +142,9 @@ void run_events (Universe universe) {
       universe.scale(Axis.Y,Direction.NEGATIVE);
   }
   //----------------------------------------------------------------------------
+
+  //if (keys[Keys.tab.id()])   universe.selectNext();
+  //if (keys[Keys.shift.id()]) universe.selectPrevious();
 }
 
 void key_down (boolean[] keys, char key) {
@@ -180,6 +191,14 @@ void key_down (boolean[] keys, char key) {
   if (key == 'v' || key == 'V') keys[Keys.v.id()] = true;
   if (key == 'b' || key == 'B') keys[Keys.b.id()] = true;
   if (key == 'n' || key == 'N') keys[Keys.n.id()] = true;
+
+  // if (key == TAB) keys[Keys.tab.id()]   = true;
+  if (key == TAB) universe.selectNext();
+  if (key == CODED) {
+    if (keyCode == CONTROL) keys[Keys.ctrl.id()] = true;
+    // if (keyCode == SHIFT) keys[Keys.shift.id()] = true;
+    // if (keyCode == SHIFT) universe.selectPrevious();
+  }
 }
 
 void key_up (boolean[] keys, char key) {
@@ -224,6 +243,12 @@ void key_up (boolean[] keys, char key) {
   if (key == 'v' || key == 'V') keys[Keys.v.id()] = false;
   if (key == 'b' || key == 'B') keys[Keys.b.id()] = false;
   if (key == 'n' || key == 'N') keys[Keys.n.id()] = false;
+
+  // if (key == TAB) keys[Keys.tab.id()]   = false;
+  if (key == CODED) {
+    if (keyCode == CONTROL) keys[Keys.ctrl.id()] = false;
+    // if (keyCode == SHIFT) keys[Keys.shift.id()] = false;
+  }
 }
 
 //==============================================================================

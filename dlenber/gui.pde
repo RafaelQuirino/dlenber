@@ -20,12 +20,12 @@ void init_gui () {
   back_color = BLACK;
   font = createFont("Arial", 14, true);
 
-  axis_box = new Checkbox(26,270,"Mostrar eixos",0);
-  grid_box = new Checkbox(26,300,"Mostrar piso",1);
+  axis_box = new Checkbox(26,470,"Mostrar eixos",0);
+  grid_box = new Checkbox(26,500,"Mostrar piso",1);
 
-  translation_box = new Checkbox(26,400,"Translacao",2);
-  rotation_box    = new Checkbox(26,430,"Rotacao",3);
-  scale_box       = new Checkbox(26,460,"Escalonamento",4);
+  translation_box = new Checkbox(26,300,"Translacao",2);
+  rotation_box    = new Checkbox(26,330,"Rotacao",3);
+  scale_box       = new Checkbox(26,360,"Escalonamento",4);
 
   axis_box.check();
   grid_box.check();
@@ -55,22 +55,30 @@ void print_menu () {
   rect(24,15,50,20);
   print_font(" Menu ",font,26,30,BLACK);
 
-  String label = "";
-  label += " QE,AD,WS: Transladar \n RY,FH,TG: Rotacionar \n";
-  label += " UO,JL,IK: Escalonar (+,-: total) \n 1 - 5: Projecoes \n ";
+  String label = " ";
   label += "0: Origem (0 = zero)\n ";
-  label += "P: Incrementa Projecao \n\n";
+  label += "1 - 5: Projecoes \n ";
+  label += "P: Incrementa Projecao \n";
   label += " Projecao atual: ";
+
+  label += "\n\n";
+  label += " Tranformacoes no objeto selecionado\n";
+  label += " QE,AD,WS: Transladar \n";
+  label += " RY,FH,TG: Rotacionar \n";
+  label += " UO,JL,IK: Escalonar (+,-: 3 eixos) \n";
+
   print_font(label,font,20,55,fill_color);
-  print_font(proj_strings[p],font,135,208,YELLOW);
+  print_font(proj_strings[p],font,135,120,YELLOW);
   print_font(".",font,22,30,fill_color);
-  print_font("Transformacoes no Universo",font,22,360,fill_color);
-  print_font("ZX,CV,BN",font,22,380,fill_color);
+  print_font("Transformacoes no Universo",font,22,270,fill_color);
+  print_font("ZX,CV,BN",font,22,290,fill_color);
+  print_font("Ctrl+(+,-): Escalonar universo",font,22,400,fill_color);
+  print_font("TAB: Selecionar objeto",font,22,420,fill_color);
 }
 
 void print_checkboxes_label () {
-  String label = "Checkboxes clicaveis !";
-  print_font(label,font,25,250,fill_color);
+  String label = "Configuracoes";
+  print_font(label,font,25,460,fill_color);
 }
 
 class Checkbox {
