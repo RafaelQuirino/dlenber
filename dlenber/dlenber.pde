@@ -1,11 +1,16 @@
 Universe universe;
 Projection projection;
+SinesAndCosines sincos;
 int FPS = 24;
+
+boolean thereWasEvent = false;
 
 void setup () {
   smooth();
   frameRate(FPS);
   fullScreen();
+
+  sincos = new SinesAndCosines();
 
   init_gui();
   init_events();
@@ -27,10 +32,13 @@ void setup () {
 void draw () {
   background(back_color);
 
-  universe.update(projection);
+  long t0 = System.nanoTime();
+  universe.update(projection,thereWasEvent);
   universe.render();
   universe.reset();
+  long t1 = System.nanoTime();
+  print("time: "+((double)(t1-t0)/1000000)+" ms\n");
 
   render_gui();
-  run_events(universe);
+  thereWasEvent = run_events(universe);
 }

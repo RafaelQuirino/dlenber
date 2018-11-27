@@ -10,7 +10,7 @@ void putpixel (int x, int y, color thecolor) {
     fill(fill_color);
 }
 
-float get_sin (int angle) {
+float calc_sin (int angle) {
   int isneg = 0;
   int ang = angle;
   if (ang < 0) {
@@ -23,11 +23,57 @@ float get_sin (int angle) {
   return result;
 }
 
-float get_cos (int angle) {
+float calc_cos (int angle) {
   int ang = angle >= 0 ? angle : -angle;
   ang %= 360;
   float a = (float) ang;
   return cos((TWO_PI*a)/360.0);
+}
+
+float[] get_sin_positive (int numAngles) {
+  float[] sines = new float[numAngles];
+  for (int i = 0; i < numAngles; i++) {
+    sines[i] = calc_sin(i);
+  }
+  return sines;
+}
+
+float[] get_sin_negative (int numAngles) {
+  float[] sines = new float[numAngles];
+  for (int i = 0; i < numAngles; i++) {
+    sines[i] = calc_sin(-i);
+  }
+  return sines;
+}
+
+float[] get_cos_positive (int numAngles) {
+  float[] cosines = new float[numAngles];
+  for (int i = 0; i < numAngles; i++) {
+    cosines[i] = calc_cos(i);
+  }
+  return cosines;
+}
+
+float[] get_cos_negative (int numAngles) {
+  float[] cosines = new float[numAngles];
+  for (int i = 0; i < numAngles; i++) {
+    cosines[i] = calc_cos(-i);
+  }
+  return cosines;
+}
+
+float get_sin (int angle) {
+  if (angle > 0)
+    return sincos.sin_positive[angle%sincos.numAngles];
+  else
+    return sincos.sin_negative[(-1*angle)%sincos.numAngles];
+}
+
+float get_cos (int angle) {
+  if (angle > 0)
+    return sincos.cos_positive[angle%sincos.numAngles];
+  else
+    return sincos.cos_negative[(-1*angle)%sincos.numAngles];
 }
 
 float[][] get_rot_mat_x (float angle) {
