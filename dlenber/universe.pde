@@ -309,15 +309,40 @@ class Universe {
 
   void render () {
     // Here, axis must be rendered after grid...
-    if (this.showGrid) this.grid.render();
-    if (this.showAxis) this.axis.render();
+    if (this.showGrid) this.grid.render(false,0);
+    if (this.showAxis) this.axis.render(false,0);
+
+    //-------------------------------------------------------------------------
+    // New way to render faces
+    //-------------------------------------------------------------------------
+    int numFaces = getNumberOfFaces();
+    Face[] faces = new Face[numFaces];
+    int[] objIds = new int[numFaces];
+    int currentFace = 0;
+    for (int i = 0; i < this.numObjects; i++) {
+      for (int j = 0; j < this.objects[i].faces.length; j++) {
+        faces[currentFace] = this.objects[i].faces[j];
+        objIds[currentFace] = i;
+        currentFace++;
+      }
+    }
+    sortFacesByAvgZ(faces);
+    for (int i = 0; i < faces.length; i++) {
+      faces[i].render(this.objects[objIds[i]].projection);
+    }
+    //-------------------------------------------------------------------------
 
     for (int i = 0; i < this.numObjects; i++) {
-      if (!(i == this.selectedObject))
-        this.objects[i].render();
+      boolean selected      = false;
+      color   selectedColor = 0;
+      if (i == this.selectedObject) {
+        selected      = true;
+        selectedColor = YELLOW;
+      }
+      this.objects[i].render(selected,selectedColor);
     }
     // Selected object must be rendered last, to get "upon" the ohters
-    this.objects[this.selectedObject].renderColor(YELLOW);
+    // this.objects[this.selectedObject].renderColor(YELLOW);
   }
 
   void reset () {
@@ -444,7 +469,7 @@ class Universe {
 
           step = NAME;
         }
-      }//else (if(i==0),if(i==1),if(i==2))else
+      }//else (if(i==0),if(i==1),if(i==2))
     }//for (int i = 0; i < strlines.length; i++)
 
     return objects;
@@ -461,4 +486,36 @@ class Universe {
     else
       this.selectedObject = this.selectedObject-1;
   }
+
+  int getNumberOfFaces () {
+    int numFaces = 0;
+    for (int i = 0; i < this.numObjects; i++) {
+      numFaces += this.objects[i].faces.length;
+    }
+    return numFaces;
+  }
+
+  void sortFacesByAvgZ (Face[] faces) {
+    return ;
+    /*
+    int i, key, j;
+    int n = faces.length;
+    for (i = 1; i < n; i++) 
+    { 
+      key = faces[i].avgZ; 
+      j = i-1; 
+
+      // Move elements of arr[0..i-1], that are 
+      //  greater than key, to one position ahead 
+      //   of their current position
+      while (j >= 0 && faces[j].avgZ > key) 
+      { 
+        arr[j+1] = arr[j]; 
+        j = j-1; 
+      } 
+      arr[j+1] = key; 
+    }
+    */
+  }
+
 }//class Universe
