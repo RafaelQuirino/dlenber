@@ -1,5 +1,9 @@
 class Face {
 
+  //Redundant, but will ease things out
+  //(or perhaps not...)
+  float[][] points; 
+  
   // Circular list of vertices
   int[] pointIndexes;
   int listLimit;
@@ -21,10 +25,16 @@ class Face {
     this.b = 0;
 
     this.avgZ = 0;
+    this.points = null;
   }
 
   Face (int[] pointIndexes) {
     
+  }
+
+  Face (float[][] points) {
+    this();
+    this.points = points;
   }
 
   void printInfo () {
@@ -43,11 +53,16 @@ class Face {
     this.pointIndexes[this.listSize++] = index;
   }
 
-  void calculateAvgZ () {
-
+  void calculateAvgZ (float[][] points) {
+    float avg = 0.0f;
+    for (int i = 0; i < this.listSize; i++) {
+      float z = points[this.pointIndexes[i]][2];
+      avg += z;
+    }
+    this.avgZ = avg/(float)this.listSize;
   }
 
-  void render () {
+  void render (float[][] points) {
 
   }
 }
