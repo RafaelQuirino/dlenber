@@ -177,10 +177,10 @@ float[][] get_tr_mat_z (float distance) {
 
 float[][] get_cavalier_mat () {
   float[][] CAVALIER = {
-    { 1.0f,             0.0f,            0.0f, 0.0f},
-    { 0.0f,             1.0f,            0.0f, 0.0f},
-    {-(sqrt(2)/2)*0.5,  -(sqrt(2)/2)*0.5, 0.0f, 0.0f},
-    { 0.0f,             0.0f,            0.0f, 1.0f}
+    { 1.0f,             0.0f,             0.0f, 0.0f},
+    { 0.0f,             1.0f,             0.0f, 0.0f},
+    {-(sqrt(2)/2)*0.5,  -(sqrt(2)/2)*0.5, 1.0f, 0.0f},
+    { 0.0f,             0.0f,             0.0f, 1.0f}
   };
   return CAVALIER;
 }
@@ -199,7 +199,7 @@ float[][] get_isometric_mat () {
   float[][] ISOMETRIC = {
     {sqrt(2)/2.0f,  1.0f/sqrt(6), 0.0f, 0.0f},
     {0.0f,          2.0f/sqrt(6), 0.0f, 0.0f},
-    {sqrt(2)/2.0f, -1.0f/sqrt(6), 0.0f, 0.0f},
+    {sqrt(2)/2.0f, -1.0f/sqrt(6), 1.0f, 0.0f},
     {0.0f,          0.0f,         0.0f, 1.0f}
   };
   return ISOMETRIC;
@@ -209,7 +209,7 @@ float[][] get_perspective_1_mat (float fz) {
   float[][] PERSPECTIVE_1 = {
     {1.0f, 0.0f, 0.0f,  0.0f},
     {0.0f, 1.0f, 0.0f,  0.0f},
-    {0.0f, 0.0f, 0.0f, -1.0f/fz},
+    {0.0f, 0.0f, 1.0f, -1.0f/fz},
     {0.0f, 0.0f, 0.0f,  1.0f}
   };
   return PERSPECTIVE_1;
@@ -219,7 +219,7 @@ float[][] get_perspective_2_mat (float fx, float fz) {
   float[][] PERSPECTIVE_2 = {
     {1.0f, 0.0f, 0.0f, -1.0f/fx},
     {0.0f, 1.0f, 0.0f,  0.0f},
-    {0.0f, 0.0f, 0.0f, -1.0f/fz},
+    {0.0f, 0.0f, 1.0f, -1.0f/fz},
     {0.0f, 0.0f, 0.0f,  1.0f}
   };
   return PERSPECTIVE_2;

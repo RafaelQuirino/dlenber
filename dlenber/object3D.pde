@@ -494,11 +494,11 @@ class Object3D {
     }
   }
 
-  void render (boolean selected, color selectedColor) {
-    this.renderLines(false,0);
-    if (selected) {
+  void render (boolean selected, color selectedColor, boolean must_render) {
+    if (selected)
       this.renderLines(true,selectedColor);
-    }
+    else if (must_render)
+      this.renderLines(false,0);
   }
 
   void update (Config config, Projection proj, float fx, float fz) {

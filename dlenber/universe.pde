@@ -28,6 +28,8 @@ class Universe {
   boolean rotateUniverse;
   boolean scaleUniverse;
 
+  Mode mode;
+
   Universe (
     int minX, int maxX, int minY, int maxY, int minZ, int maxZ,
     int myWidth, int myHeight
@@ -56,6 +58,8 @@ class Universe {
     this.translateUniverse = true;
     this.rotateUniverse = false;
     this.scaleUniverse = false;
+
+    this.mode = Mode.NORMAL;
   }
 
   void printObjects () {
@@ -300,17 +304,26 @@ class Universe {
     this.axis.update(this.config,proj,this.fx,this.fz);
     this.grid.update(this.config,proj,this.fx,this.fz);
 
-    // print("this.numObjects: "+this.numObjects+"\n");
-    // print("this.objects.length: "+this.objects.length+"\n");
-
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].update(this.config,proj,this.fx,this.fz);
   }
 
+  void printFaces(Face[] faces) {
+    for (int i = 0; i < faces.length; i++) {
+      faces[i].printInfo();
+    }
+  }
+
+  void printSeparator() {
+    int n = 80;
+    for (int i = 0; i < n; i++) print("-");
+    print("\n");
+  }
+
   void render () {
     // Here, axis must be rendered after grid...
-    if (this.showGrid) this.grid.render(false,0);
-    if (this.showAxis) this.axis.render(false,0);
+    if (this.showGrid) this.grid.render(false,0,true);
+    if (this.showAxis) this.axis.render(false,0,true);
 
     //-------------------------------------------------------------------------
     // New way to render faces
@@ -326,23 +339,36 @@ class Universe {
         currentFace++;
       }
     }
-    sortFacesByAvgZ(faces);
+    sortFacesByAvgZ(faces,objIds);
     for (int i = 0; i < faces.length; i++) {
-      faces[i].render(this.objects[objIds[i]].projection);
+      boolean selected = objIds[i] == this.selectedObject ? true : false;
+      faces[i].render(this.objects[objIds[i]].projection,selected);
     }
+    // boolean selected = 0 == this.selectedObject ? true : false;
+    // this.objects[0].faces[0].render(this.objects[0].projection,selected);
     //-------------------------------------------------------------------------
 
-    for (int i = 0; i < this.numObjects; i++) {
-      boolean selected      = false;
-      color   selectedColor = 0;
-      if (i == this.selectedObject) {
-        selected      = true;
-        selectedColor = YELLOW;
-      }
-      this.objects[i].render(selected,selectedColor);
-    }
-    // Selected object must be rendered last, to get "upon" the ohters
-    // this.objects[this.selectedObject].renderColor(YELLOW);
+    //-------------------------------------------------------------------------
+    // Deprecated (should be used for wireframe mode...)
+    //-------------------------------------------------------------------------
+    // for (int i = 0; i < this.numObjects; i++) {
+    //   boolean selected      = false;
+    //   color   selectedColor = 0;
+    //   if (i == this.selectedObject) {
+    //     selected      = true;
+    //     selectedColor = YELLOW;
+    //   }
+    //   else {
+    //     selected      = false;
+    //     selectedColor = 0;
+    //   }
+    //   this.objects[i].render(selected,selectedColor,true);
+    // }
+
+    // Only selected object will be rendered
+    //---------------------------------------
+    // this.objects[this.selectedObject].render(true,YELLOW,false);
+    //-------------------------------------------------------------------------
   }
 
   void reset () {
@@ -437,6 +463,7 @@ class Universe {
           faces[count].r = scanner.nextFloat();
           faces[count].g = scanner.nextFloat();
           faces[count].b = scanner.nextFloat();
+          faces[count].setRGB();
           if (++count==sizef) {
             count = 0;
             step = ROT;
@@ -495,27 +522,29 @@ class Universe {
     return numFaces;
   }
 
-  void sortFacesByAvgZ (Face[] faces) {
-    return ;
-    /*
-    int i, key, j;
+  void sortFacesByAvgZ (Face[] faces, int[] objIds) {
+    int i, j;
+    Face keyface;
+    int objId;
     int n = faces.length;
-    for (i = 1; i < n; i++) 
-    { 
-      key = faces[i].avgZ; 
-      j = i-1; 
+    for (i = 1; i < n; i++)
+    {
+      keyface = faces[i];
+      objId = objIds[i];
+      j = i-1;
 
-      // Move elements of arr[0..i-1], that are 
-      //  greater than key, to one position ahead 
+      // Move elements of arr[0..i-1], that are
+      //  greater than key, to one position ahead
       //   of their current position
-      while (j >= 0 && faces[j].avgZ > key) 
-      { 
-        arr[j+1] = arr[j]; 
-        j = j-1; 
-      } 
-      arr[j+1] = key; 
+      while (j >= 0 && faces[j].avgZ > keyface.avgZ)
+      {
+        faces[j+1] = faces[j];
+        objIds[j+1] = objIds[j];
+        j = j-1;
+      }
+      faces[j+1] = keyface;
+      objIds[j+1] = objId;
     }
-    */
   }
 
 }//class Universe

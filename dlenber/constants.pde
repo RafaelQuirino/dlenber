@@ -31,6 +31,11 @@ enum Direction {
   NEGATIVE;
 }
 
+enum Mode {
+  NORMAL,
+  WIREFRAME;
+}
+
 class SinesAndCosines {
   float[] sin_positive;
   float[] sin_negative;

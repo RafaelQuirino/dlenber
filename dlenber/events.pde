@@ -78,13 +78,6 @@ void run_events (Universe universe) {
     if (keys[Keys.plus.id()])  obj.scale(Axis.ALL_3, Direction.POSITIVE);
     if (keys[Keys.minus.id()]) obj.scale(Axis.ALL_3, Direction.NEGATIVE);
   }
-  // Universe Transformations
-  // if (keys[Keys.z.id()]) universe.translate(Axis.Z,Direction.POSITIVE);
-  // if (keys[Keys.x.id()]) universe.translate(Axis.Z,Direction.NEGATIVE);
-  // if (keys[Keys.c.id()]) universe.rotate(Axis.Z,Direction.POSITIVE);
-  // if (keys[Keys.v.id()]) universe.rotate(Axis.Z,Direction.NEGATIVE);
-  // if (keys[Keys.b.id()]) universe.scale(Axis.Z,Direction.POSITIVE);
-  // if (keys[Keys.n.id()]) universe.scale(Axis.Z,Direction.NEGATIVE);
 
   // Universe Transformations in Axis Z ----------------------------------------
   if (keys[Keys.z.id()]) {

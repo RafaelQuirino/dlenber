@@ -159,6 +159,85 @@ void circ_bres(int x0, int y0, int radius, color thecolor) {
   }
 }
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// POLYGON FILLING ALGORITHMS
+//------------------------------------------------------------------------------
+void scanline_fill (float[][] points, int[] pointIndexes, int numpoints, color thecolor) {
+  int n = numpoints;
+
+  // Setting poly constants;
+  int MAX_POLY_CORNERS = 128;
+  int polyX[] = new int[n];
+  int polyY[] = new int[n];
+  for (int i = 0; i < n; i++) {
+    polyX[i] = (int) points[pointIndexes[i]][0];
+    polyY[i] = (int) points[pointIndexes[i]][1];
+  }
+  // Setting "image" size constants
+  int minX=polyX[0], maxX=polyX[0], minY=polyY[0], maxY=polyY[0];
+  for (int i = 1; i < n; i++) {
+    int x = polyX[i], y = polyY[i];
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  int IMAGE_TOP=minY, IMAGE_BOT=maxY, IMAGE_LEFT=minX, IMAGE_RIGHT=maxX;
+  int polyCorners = n;
+
+  int nodes, pixelX, pixelY, i, j, swap;
+  int nodeX[] = new int[MAX_POLY_CORNERS];
+
+  //  Loop through the rows of the image.
+  for (pixelY=IMAGE_TOP; pixelY<IMAGE_BOT; pixelY++) {
+
+    //  Build a list of nodes.
+    nodes=0;
+    j=polyCorners-1;
+    for (i=0; i<polyCorners; i++) {
+      if (polyY[i]<(double) pixelY && polyY[j]>=(double) pixelY
+      ||  polyY[j]<(double) pixelY && polyY[i]>=(double) pixelY) {
+        nodeX[nodes++] = (int) (polyX[i]+(pixelY-polyY[i])/(polyY[j]-polyY[i])
+        *(polyX[j]-polyX[i]));
+      }
+      j=i;
+    }
+
+    //  Sort the nodes, via a simple “Bubble” sort.
+    i=0;
+    while (i<nodes-1) {
+      if (nodeX[i]>nodeX[i+1]) {
+        swap=nodeX[i]; nodeX[i]=nodeX[i+1]; nodeX[i+1]=swap;
+        if (i !=  0) i--;
+      }
+      else {
+        i++;
+      }
+    }
+
+    //  Fill the pixels between node pairs.
+    for (i=0; i<nodes; i+=2) {
+      if (nodeX[i  ] >= IMAGE_RIGHT) break;
+      if (nodeX[i+1] > IMAGE_LEFT ) {
+        if (nodeX[i  ] < IMAGE_LEFT ) nodeX[i  ] = IMAGE_LEFT ;
+        if (nodeX[i+1] > IMAGE_RIGHT) nodeX[i+1] = IMAGE_RIGHT;
+        for (pixelX=nodeX[i]; pixelX<nodeX[i+1]; pixelX++)
+          putpixel(pixelX,pixelY,thecolor);
+      }
+    }
+  }
+}
+
+void scanline_fill_2 (float[][] points, int[] pointIndexes, int numpoints, color thecolor) {
+  fill(thecolor);
+  beginShape();
+  for (int i = 0; i < numpoints; i++) {
+    vertex((int)points[pointIndexes[i]][0], (int)points[pointIndexes[i]][1]);
+  }
+  endShape(CLOSE);
+  fill(fill_color);
+}
 //==============================================================================
 
 
