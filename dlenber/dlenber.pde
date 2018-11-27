@@ -1,15 +1,15 @@
 Universe universe;
 Projection projection;
+int FPS = 24;
 
 void setup () {
   smooth();
-  frameRate(60);
+  frameRate(FPS);
   fullScreen();
 
   init_gui();
   init_events();
   projection = Projection.CAVALIER;
-  // projection = Projection.PERSPECTIVE_1;
 
   universe = new Universe (
     -100,  100,
