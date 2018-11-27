@@ -52,10 +52,14 @@ class Object3D {
     this.initSteps();
 
     this.updateMatrices();
+
+    this.name = "Object";
+    this.faces = new Face[0];
   }
 
   Object3D (float[][] points, int[][] lines, Face[] faces) {
     this(points,lines);
+    this.name = "Object";
     this.faces = faces;
   }
 
@@ -372,6 +376,12 @@ class Object3D {
     this.points = dot(this.points,this.Tz);
   }
 
+  void calculateAvgZ () {
+    for (int i = 0; i < this.faces.length; i++) {
+      this.faces[i].calculateAvgZ(this.points);
+    }
+  }
+
   void project(Projection proj, float fx, float fz) {
 
     this.projection = make_copy(this.points);
@@ -449,8 +459,25 @@ class Object3D {
     }
   }
 
-  void render () {
-    for (int i = 0; i < this.lines.length; i++) {
+  void renderLines (boolean flag, color specificColor) {
+    if (!flag) {
+      for (int i = 0; i < this.lines.length; i++) {
+        float x0 = this.projection[this.lines[i][0]][0];
+        float y0 = this.projection[this.lines[i][0]][1];
+        float x1 = this.projection[this.lines[i][1]][0];
+        float y1 = this.projection[this.lines[i][1]][1];
+
+        lin_bres(
+          (int) x0,
+          (int) y0,
+          (int) x1,
+          (int) y1,
+          this.lineColors[i]
+        );
+      }
+    }
+    else {
+      for (int i = 0; i < this.lines.length; i++) {
       float x0 = this.projection[this.lines[i][0]][0];
       float y0 = this.projection[this.lines[i][0]][1];
       float x1 = this.projection[this.lines[i][1]][0];
@@ -461,30 +488,22 @@ class Object3D {
         (int) y0,
         (int) x1,
         (int) y1,
-        this.lineColors[i]
+        specificColor
       );
+    }
     }
   }
 
-  void renderColor (color thecolor) {
-    for (int i = 0; i < this.lines.length; i++) {
-      float x0 = this.projection[this.lines[i][0]][0];
-      float y0 = this.projection[this.lines[i][0]][1];
-      float x1 = this.projection[this.lines[i][1]][0];
-      float y1 = this.projection[this.lines[i][1]][1];
-
-      lin_bres(
-        (int) x0,
-        (int) y0,
-        (int) x1,
-        (int) y1,
-        thecolor
-      );
+  void render (boolean selected, color selectedColor) {
+    this.renderLines(false,0);
+    if (selected) {
+      this.renderLines(true,selectedColor);
     }
   }
 
   void update (Config config, Projection proj, float fx, float fz) {
     transform();
+    calculateAvgZ();
     project(proj,fx,fz);
     convertToDisplay(config);
   }
