@@ -233,8 +233,8 @@ class Universe {
   void rotate (Axis axis, Direction dir) {
     this.updateRotation(axis,dir,this.dr);
 
-    this.grid.updateRotation(axis,dir,this.dr);
-    this.axis.updateRotation(axis,dir,this.dr);
+    this.grid.updateRotationUniverse(axis,dir,this.dr);
+    this.axis.updateRotationUniverse(axis,dir,this.dr);
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].updateRotationUniverse(axis,dir,this.dr);
   }
@@ -264,8 +264,8 @@ class Universe {
   void scale (Axis axis, Direction dir) {
     this.updateScale(axis,dir,this.ds);
 
-    this.grid.updateScale(axis,dir,this.ds);
-    this.axis.updateScale(axis,dir,this.ds);
+    this.grid.updateScaleUniverse(axis,dir,this.ds);
+    this.axis.updateScaleUniverse(axis,dir,this.ds);
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].updateScaleUniverse(axis,dir,this.ds);
   }
@@ -294,8 +294,8 @@ class Universe {
   void translate (Axis axis, Direction dir) {
     this.updateTranslation(axis,dir,this.dt);
 
-    this.grid.updateTranslation(axis,dir,this.dt);
-    this.axis.updateTranslation(axis,dir,this.dt);
+    this.grid.updateTranslationUniverse(axis,dir,this.dt);
+    this.axis.updateTranslationUniverse(axis,dir,this.dt);
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].updateTranslationUniverse(axis,dir,this.dt);
   }
