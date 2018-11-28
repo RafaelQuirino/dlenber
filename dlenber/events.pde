@@ -227,8 +227,14 @@ void key_up (boolean[] keys, char key) {
   if (key == '9') keys[Keys.nine.id()]  = false;
   if (key == '0') keys[Keys.zero.id()]  = false;
 
-  if (key == '+') keys[Keys.plus.id()]  = false;
-  if (key == '-') keys[Keys.minus.id()] = false;
+  if (key == '+') {
+    keys[Keys.plus.id()] = false;
+    keys[Keys.ctrl.id()] = false;//To prevent a bug...
+  }
+  if (key == '-') {
+    keys[Keys.minus.id()] = false;
+    keys[Keys.ctrl.id()] = false; //To prevent a bug...
+  }
 
   if (key == 'z' || key == 'Z') keys[Keys.z.id()] = false;
   if (key == 'x' || key == 'X') keys[Keys.x.id()] = false;
@@ -265,5 +271,6 @@ void mouseClicked () {
   translation_box.listen(mouseX,mouseY,universe);
   rotation_box.listen(mouseX,mouseY,universe);
   scale_box.listen(mouseX,mouseY,universe);
+  mode_box.listen(mouseX,mouseY,universe);
 }
 //==============================================================================

@@ -1,11 +1,12 @@
 PFont font;
 color fill_color;
 color back_color;
-Checkbox axis_box;
-Checkbox grid_box;
 Checkbox translation_box;
 Checkbox rotation_box;
 Checkbox scale_box;
+Checkbox axis_box;
+Checkbox grid_box;
+Checkbox mode_box;
 
 String[] proj_strings = {
   "Cavaleira",
@@ -27,12 +28,16 @@ void init_gui () {
   rotation_box    = new Checkbox(26,330,"Rotacao",3);
   scale_box       = new Checkbox(26,360,"Escalonamento",4);
 
+  mode_box = new Checkbox(26,530,"WIREFRAME",5);
+
   axis_box.check();
   grid_box.check();
-  translation_box.check();
+  rotation_box.check();
+
+  mode_box.check();
 }
 
-void render_gui () {
+void render_gui (float fps) {
   print_menu ();
   print_checkboxes_label();
 
@@ -42,6 +47,10 @@ void render_gui () {
   translation_box.render();
   rotation_box.render();
   scale_box.render();
+
+  mode_box.render();
+  print_font("FPS: ",font,26,600,fill_color);
+  print_font(Float.toString(fps),font,60,600,YELLOW);
 }
 
 void print_menu () {
@@ -62,7 +71,7 @@ void print_menu () {
   label += " Projecao atual: ";
 
   label += "\n\n";
-  label += " Tranformacoes no objeto selecionado\n";
+  label += " Tranformacoes no objeto\n";
   label += " QE,AD,WS: Transladar \n";
   label += " RY,FH,TG: Rotacionar \n";
   label += " UO,JL,IK: Escalonar (+,-: 3 eixos) \n";
@@ -194,6 +203,17 @@ class Checkbox {
           universe.translateUniverse = false;
           universe.rotateUniverse = false;
           universe.scaleUniverse = true;
+        }
+      }
+      //Mode box
+      if (this.id == 5) {
+        if (this.checked) {
+          this.checked = false;
+          universe.mode = Mode.NORMAL;
+        }
+        else {
+          this.checked = true;
+          universe.mode = Mode.WIREFRAME;
         }
       }
     }

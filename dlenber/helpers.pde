@@ -109,6 +109,15 @@ float[][] get_rot_mat_z (float angle) {
   return rotmat;
 }
 
+float[][] get_rot_mat (float anglex, float angley, float anglez) {
+  int ax = (int) anglex;
+  int ay = (int) angley;
+  int az = (int) anglez;
+  float[][] rotmat = dot(get_rot_mat_x(ax),get_rot_mat_y(ay));
+  rotmat = dot(rotmat,get_rot_mat_z(az));
+  return rotmat;
+}
+
 float[][] get_sc_mat_x (float factor) {
   float f = factor;
   float[][] scmat = {
@@ -142,6 +151,19 @@ float[][] get_sc_mat_z (float factor) {
   return scmat;
 }
 
+float[][] get_sc_mat (float factorx, float factory, float factorz) {
+  float f1 = factorx;
+  float f2 = factory;
+  float f3 = factorz;
+  float[][] scmat = {
+    {1.0f+f1,  0.0f,    0.0f,    0.0f},
+    {0.0f,     1.0f+f2, 0.0f,    0.0f},
+    {0.0f,     0.0f,    1.0f+f3, 0.0f},
+    {0.0f,     0.0f,    0.0f,    1.0f}
+  };
+  return scmat;
+}
+
 float[][] get_tr_mat_x (float distance) {
   float d = distance;
   float[][] trmat = {
@@ -171,6 +193,16 @@ float[][] get_tr_mat_z (float distance) {
     {0.0f,  1.0f, 0.0f, 0.0f},
     {0.0f,  0.0f, 1.0f, 0.0f},
     {0.0f,  0.0f,    d, 1.0f}
+  };
+  return trmat;
+}
+
+float[][] get_tr_mat (float dx, float dy, float dz) {
+  float[][] trmat = {
+    {1.0f,  0.0f, 0.0f, 0.0f},
+    {0.0f,  1.0f, 0.0f, 0.0f},
+    {0.0f,  0.0f, 1.0f, 0.0f},
+    {  dx,    dy,   dz, 1.0f}
   };
   return trmat;
 }

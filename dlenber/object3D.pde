@@ -16,9 +16,9 @@ class Object3D {
   color myColor;
 
   // Transformation matrices
-  float[][] Rx, Ry, Rz;
-  float[][] Sx, Sy, Sz;
-  float[][] Tx, Ty, Tz;
+  float[][] Rx, Ry, Rz, Rxyz;
+  float[][] Sx, Sy, Sz, Sxyz;
+  float[][] Tx, Ty, Tz, Txyz;
 
   // Current state of each transformation
   float rx, ry, rz;
@@ -59,7 +59,6 @@ class Object3D {
 
   Object3D (float[][] points, int[][] lines, Face[] faces) {
     this(points,lines);
-    this.name = "Object";
     this.faces = faces;
   }
 
@@ -147,21 +146,24 @@ class Object3D {
   }
 
   void setRotationMatrices () {
-    this.Rx = get_rot_mat_x(this.rx);
-    this.Ry = get_rot_mat_y(this.ry);
-    this.Rz = get_rot_mat_z(this.rz);
+    // this.Rx = get_rot_mat_x(this.rx);
+    // this.Ry = get_rot_mat_y(this.ry);
+    // this.Rz = get_rot_mat_z(this.rz);
+    this.Rxyz = get_rot_mat(this.rx,this.ry,this.rz);
   }
 
   void setScaleMatrices () {
-    this.Sx = get_sc_mat_x(this.sx);
-    this.Sy = get_sc_mat_y(this.sy);
-    this.Sz = get_sc_mat_z(this.sz);
+    // this.Sx = get_sc_mat_x(this.sx);
+    // this.Sy = get_sc_mat_y(this.sy);
+    // this.Sz = get_sc_mat_z(this.sz);
+    this.Sxyz = get_sc_mat(this.sx,this.sy,this.sz);
   }
 
   void setTranslationMatrices () {
-    this.Tx = get_tr_mat_x(this.tx);
-    this.Ty = get_tr_mat_y(this.ty);
-    this.Tz = get_tr_mat_z(this.tz);
+    // this.Tx = get_tr_mat_x(this.tx);
+    // this.Ty = get_tr_mat_y(this.ty);
+    // this.Tz = get_tr_mat_z(this.tz);
+    this.Txyz = get_tr_mat(this.tx,this.ty,this.tz);
   }
 
   void updateMatrices () {
@@ -252,21 +254,24 @@ class Object3D {
   }
 
   void setRotationMatricesUniverse () {
-    this.Rx = get_rot_mat_x(this.urx);
-    this.Ry = get_rot_mat_y(this.ury);
-    this.Rz = get_rot_mat_z(this.urz);
+    // this.Rx = get_rot_mat_x(this.urx);
+    // this.Ry = get_rot_mat_y(this.ury);
+    // this.Rz = get_rot_mat_z(this.urz);
+    this.Rxyz = get_rot_mat(this.urx,this.ury,this.urz);
   }
 
   void setScaleMatricesUniverse () {
-    this.Sx = get_sc_mat_x(this.usx);
-    this.Sy = get_sc_mat_y(this.usy);
-    this.Sz = get_sc_mat_z(this.usz);
+    // this.Sx = get_sc_mat_x(this.usx);
+    // this.Sy = get_sc_mat_y(this.usy);
+    // this.Sz = get_sc_mat_z(this.usz);
+    this.Sxyz = get_sc_mat(this.usx,this.usy,this.usz);
   }
 
   void setTranslationMatricesUniverse () {
-    this.Tx = get_tr_mat_x(this.utx);
-    this.Ty = get_tr_mat_y(this.uty);
-    this.Tz = get_tr_mat_z(this.utz);
+    // this.Tx = get_tr_mat_x(this.utx);
+    // this.Ty = get_tr_mat_y(this.uty);
+    // this.Tz = get_tr_mat_z(this.utz);
+    this.Txyz = get_tr_mat(this.utx,this.uty,this.utz);
   }
 
   void updateMatricesUniverse () {
@@ -353,27 +358,39 @@ class Object3D {
   void transform () {
     // Transformations in relation to the Object
     this.updateMatrices();
-    this.points = dot(this.points,this.Rx);
-    this.points = dot(this.points,this.Ry);
-    this.points = dot(this.points,this.Rz);
-    this.points = dot(this.points,this.Sx);
-    this.points = dot(this.points,this.Sy);
-    this.points = dot(this.points,this.Sz);
-    this.points = dot(this.points,this.Tx);
-    this.points = dot(this.points,this.Ty);
-    this.points = dot(this.points,this.Tz);
+
+    // this.points = dot(this.points,this.Rx);
+    // this.points = dot(this.points,this.Ry);
+    // this.points = dot(this.points,this.Rz);
+    this.points = dot(this.points,this.Rxyz);
+
+    // this.points = dot(this.points,this.Sx);
+    // this.points = dot(this.points,this.Sy);
+    // this.points = dot(this.points,this.Sz);
+    this.points = dot(this.points,this.Sxyz);
+
+    // this.points = dot(this.points,this.Tx);
+    // this.points = dot(this.points,this.Ty);
+    // this.points = dot(this.points,this.Tz);
+    this.points = dot(this.points,this.Txyz);
 
     // Transformations in relations to the Universe
     this.updateMatricesUniverse();
-    this.points = dot(this.points,this.Rx);
-    this.points = dot(this.points,this.Ry);
-    this.points = dot(this.points,this.Rz);
-    this.points = dot(this.points,this.Sx);
-    this.points = dot(this.points,this.Sy);
-    this.points = dot(this.points,this.Sz);
-    this.points = dot(this.points,this.Tx);
-    this.points = dot(this.points,this.Ty);
-    this.points = dot(this.points,this.Tz);
+
+    // this.points = dot(this.points,this.Rx);
+    // this.points = dot(this.points,this.Ry);
+    // this.points = dot(this.points,this.Rz);
+    this.points = dot(this.points,this.Rxyz);
+
+    // this.points = dot(this.points,this.Sx);
+    // this.points = dot(this.points,this.Sy);
+    // this.points = dot(this.points,this.Sz);
+    this.points = dot(this.points,this.Sxyz);
+
+    // this.points = dot(this.points,this.Tx);
+    // this.points = dot(this.points,this.Ty);
+    // this.points = dot(this.points,this.Tz);
+    this.points = dot(this.points,this.Txyz);
   }
 
   void calculateAvgZ () {
@@ -498,7 +515,7 @@ class Object3D {
     if (selected)
       this.renderLines(true,selectedColor);
     else if (must_render)
-      this.renderLines(false,0);
+      this.renderLines(false,selectedColor);
   }
 
   void update (Config config, Projection proj, float fx, float fz) {

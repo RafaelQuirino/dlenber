@@ -55,9 +55,9 @@ class Universe {
     this.initStates();
     this.initSteps();
 
-    this.translateUniverse = true;
-    this.rotateUniverse = false;
-    this.scaleUniverse = false;
+    this.translateUniverse = false;
+    this.rotateUniverse    = true;
+    this.scaleUniverse     = false;
 
     this.mode = Mode.NORMAL;
   }
@@ -325,50 +325,52 @@ class Universe {
     if (this.showGrid) this.grid.render(false,0,true);
     if (this.showAxis) this.axis.render(false,0,true);
 
-    //-------------------------------------------------------------------------
-    // New way to render faces
-    //-------------------------------------------------------------------------
-    int numFaces = getNumberOfFaces();
-    Face[] faces = new Face[numFaces];
-    int[] objIds = new int[numFaces];
-    int currentFace = 0;
-    for (int i = 0; i < this.numObjects; i++) {
-      for (int j = 0; j < this.objects[i].faces.length; j++) {
-        faces[currentFace] = this.objects[i].faces[j];
-        objIds[currentFace] = i;
-        currentFace++;
+    if (this.mode == Mode.NORMAL) {
+      //-----------------------------------------------------------------------
+      // NORMAL rendering
+      //-----------------------------------------------------------------------
+      int numFaces = getNumberOfFaces();
+      Face[] faces = new Face[numFaces];
+      int[] objIds = new int[numFaces];
+      int currentFace = 0;
+      for (int i = 0; i < this.numObjects; i++) {
+        for (int j = 0; j < this.objects[i].faces.length; j++) {
+          faces[currentFace] = this.objects[i].faces[j];
+          objIds[currentFace] = i;
+          currentFace++;
+        }
       }
-    }
-    sortFacesByAvgZ(faces,objIds);
-    for (int i = 0; i < faces.length; i++) {
-      boolean selected = objIds[i] == this.selectedObject ? true : false;
-      faces[i].render(this.objects[objIds[i]].projection,selected);
-    }
-    // boolean selected = 0 == this.selectedObject ? true : false;
-    // this.objects[0].faces[0].render(this.objects[0].projection,selected);
-    //-------------------------------------------------------------------------
 
-    //-------------------------------------------------------------------------
-    // Deprecated (should be used for wireframe mode...)
-    //-------------------------------------------------------------------------
-    // for (int i = 0; i < this.numObjects; i++) {
-    //   boolean selected      = false;
-    //   color   selectedColor = 0;
-    //   if (i == this.selectedObject) {
-    //     selected      = true;
-    //     selectedColor = YELLOW;
-    //   }
-    //   else {
-    //     selected      = false;
-    //     selectedColor = 0;
-    //   }
-    //   this.objects[i].render(selected,selectedColor,true);
-    // }
+      float[][] norms = calculateNorms(faces);
+      faces = getVisibleFaces(faces,norms);
+      sortFacesByAvgZ(faces,objIds);
 
-    // Only selected object will be rendered
-    //---------------------------------------
-    // this.objects[this.selectedObject].render(true,YELLOW,false);
-    //-------------------------------------------------------------------------
+      for (int i = 0; i < faces.length; i++) {       // from smallest to biggest avgZ
+      // for (int i = faces.length-1; i >= 0; i--) { // from biggest to smallest avgZ
+        boolean selected = objIds[i] == this.selectedObject ? true : false;
+        faces[i].render(this.objects[objIds[i]].projection,selected);
+      }
+
+      // Rendering just the first object's first face, for testing...
+      // boolean selected = 0 == this.selectedObject ? true : false;
+      // this.objects[0].faces[0].render(this.objects[0].projection,selected);
+      //-----------------------------------------------------------------------
+    }
+    else if (this.mode == Mode.WIREFRAME) {
+      //-----------------------------------------------------------------------
+      // WIREFRAME rendering
+      //-----------------------------------------------------------------------
+      for (int i = 0; i < this.numObjects; i++) {
+        boolean selected      = false;
+        color   selectedColor = fill_color;
+        if (i == this.selectedObject) {
+          selected      = true;
+          selectedColor = YELLOW;
+        }
+        this.objects[i].render(selected,selectedColor,true);
+      }
+      //-----------------------------------------------------------------------
+    }
   }
 
   void reset () {
@@ -398,18 +400,18 @@ class Universe {
     float tx=0, ty=0, tz=0;
 
     for (int i = 0; i < strlines.length; i++) {
-      Scanner scanner = new Scanner(strlines[i]);
+      String[] pieces = strlines[i].split(" ");
+
       if (i==0) {
         // Read figure name
         // TODO
       }
       else if (i==1) {
         // Read universe config (Xmin Xmax Ymin Ymax)
-        // Not a good implementation, must fix...
-        xmin = scanner.nextFloat();
-        xmax = scanner.nextFloat();
-        ymin = scanner.nextFloat();
-        ymax = scanner.nextFloat();
+        xmin = Float.parseFloat(pieces[0]);
+        xmax = Float.parseFloat(pieces[1]);
+        ymin = Float.parseFloat(pieces[2]);
+        ymax = Float.parseFloat(pieces[3]);
         this.config.minX = (int) xmin;
         this.config.maxX = (int) xmax;
         this.config.minY = (int) ymin;
@@ -417,7 +419,7 @@ class Universe {
       }
       else if (i==2) {
         // Read number of objects
-        num_objects = scanner.nextInt();
+        num_objects = Integer.parseInt(pieces[0]);
         objects = new Object3D[num_objects];
       }
       else {
@@ -429,18 +431,18 @@ class Universe {
         }
         else if (step==PLF_SIZES) {
           // Read number of points, lines and faces
-          sizep = scanner.nextInt();
-          sizel = scanner.nextInt();
-          sizef = scanner.nextInt();
+          sizep = Integer.parseInt(pieces[0]);
+          sizel = Integer.parseInt(pieces[1]);
+          sizef = Integer.parseInt(pieces[2]);
           points = new float[sizep][4];
           lines = new int[sizel][2];
           faces = new Face[sizef];
           step = P;
         }
         else if (step==P) {
-          points[count][0] = scanner.nextFloat();
-          points[count][1] = scanner.nextFloat();
-          points[count][2] = scanner.nextFloat();
+          points[count][0] = Float.parseFloat(pieces[0]);
+          points[count][1] = Float.parseFloat(pieces[1]);
+          points[count][2] = Float.parseFloat(pieces[2]);
           points[count][3] = 1.0f;
           if (++count==sizep) {
             count = 0;
@@ -448,21 +450,21 @@ class Universe {
           }
         }
         else if (step==L) {
-          lines[count][0] = scanner.nextInt()-1;
-          lines[count][1] = scanner.nextInt()-1;
+          lines[count][0] = Integer.parseInt(pieces[0])-1;
+          lines[count][1] = Integer.parseInt(pieces[1])-1;
           if (++count==sizel) {
             count = 0;
             step = F;
           }
         }
         else if (step==F) {
-          int num_vertices = scanner.nextInt();
+          int num_vertices = Integer.parseInt(pieces[0]);
           faces[count] = new Face();
           for (int k=0; k<num_vertices; k++)
-            faces[count].addPointIndex(scanner.nextInt()-1);
-          faces[count].r = scanner.nextFloat();
-          faces[count].g = scanner.nextFloat();
-          faces[count].b = scanner.nextFloat();
+            faces[count].addPointIndex(Integer.parseInt(pieces[k+1])-1);
+          faces[count].r = Float.parseFloat(pieces[num_vertices+1]);
+          faces[count].g = Float.parseFloat(pieces[num_vertices+2]);
+          faces[count].b = Float.parseFloat(pieces[num_vertices+3]);
           faces[count].setRGB();
           if (++count==sizef) {
             count = 0;
@@ -470,21 +472,21 @@ class Universe {
           }
         }
         else if (step==ROT) {
-          rx = scanner.nextFloat();
-          ry = scanner.nextFloat();
-          rz = scanner.nextFloat();
+          rx = Float.parseFloat(pieces[0]);
+          ry = Float.parseFloat(pieces[1]);
+          rz = Float.parseFloat(pieces[2]);
           step = SC;
         }
         else if (step==SC) {
-          sx = scanner.nextFloat();
-          sy = scanner.nextFloat();
-          sz = scanner.nextFloat();
+          sx = Float.parseFloat(pieces[0]);
+          sy = Float.parseFloat(pieces[1]);
+          sz = Float.parseFloat(pieces[2]);
           step = TR;
         }
         else if (step==TR) {
-          tx = scanner.nextFloat();
-          ty = scanner.nextFloat();
-          tz = scanner.nextFloat();
+          tx = Float.parseFloat(pieces[0]);
+          ty = Float.parseFloat(pieces[1]);
+          tz = Float.parseFloat(pieces[2]);
 
           Object3D obj_aux = new Object3D(points,lines);
           obj_aux.setStates(rx,ry,rz,sx,sy,sz,0,0,0);
@@ -522,6 +524,15 @@ class Universe {
     return numFaces;
   }
 
+  float[][] calculateNorms (Face[] faces) {
+    float[][] norms = new float[faces.length][3];
+    return norms;
+  }
+
+  Face[] getVisibleFaces (Face[] faces, float[][] norms) {
+      return faces;
+  }
+
   void sortFacesByAvgZ (Face[] faces, int[] objIds) {
     int i, j;
     Face keyface;
@@ -534,8 +545,8 @@ class Universe {
       j = i-1;
 
       // Move elements of arr[0..i-1], that are
-      //  greater than key, to one position ahead
-      //   of their current position
+      // greater than key, to one position ahead
+      // of their current position
       while (j >= 0 && faces[j].avgZ > keyface.avgZ)
       {
         faces[j+1] = faces[j];
