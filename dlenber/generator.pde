@@ -11,7 +11,7 @@ A saída será composta de coordenadas dos pontos, índices de linhas,
 
 ***/
 
-import java.util.List;
+/*import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -343,4 +343,4 @@ void linhaDDA(int xi, int yi, int xf, int yf) {
         y += incy;
         point((int) x, (int) y);
     }
-}
+}*/
