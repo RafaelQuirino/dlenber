@@ -104,6 +104,8 @@ class Object3D {
   void setColor (color thecolor) {
     for (int i = 0; i < this.lines.length; i++)
       this.setLineColor(thecolor,i);
+    for (int i = 0; i < this.faces.length; i++)
+      this.faces[i].setColor(thecolor);
   }
 
   void setLineColor (color thecolor, int index) {
@@ -484,7 +486,7 @@ class Object3D {
         float x1 = this.projection[this.lines[i][1]][0];
         float y1 = this.projection[this.lines[i][1]][1];
 
-        lin_bres(
+        my_line(
           (int) x0,
           (int) y0,
           (int) x1,
@@ -500,7 +502,7 @@ class Object3D {
       float x1 = this.projection[this.lines[i][1]][0];
       float y1 = this.projection[this.lines[i][1]][1];
 
-      lin_bres(
+      my_line(
         (int) x0,
         (int) y0,
         (int) x1,

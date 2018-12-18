@@ -5,8 +5,9 @@ int FPS = 30;
 
 void setup () {
   smooth();
-  fullScreen();
+  //fullScreen();
   // frameRate(FPS);
+  size(1280,768);
 
   init_gui();
   init_events();
@@ -21,11 +22,13 @@ void setup () {
     width, height
   );
 
-  universe.mode = Mode.WIREFRAME;
+  //universe.mode = Mode.WIREFRAME;
+  mode_box.uncheck();
 
   Object3D objects[] = universe.importFigure("figure.dat");
-  for (int i = 0; i < objects.length; i++)
+  for (int i = 0; i < objects.length; i++) {
     universe.addObject(objects[i]);
+  }
   universe.printObjects();
 }
 

@@ -30,6 +30,12 @@ class Universe {
 
   Mode mode;
 
+  Object3D observer_cavalier;
+  Object3D observer_cabinet;
+  Object3D observer_isometric;
+  Object3D observer_perspective_1;
+  Object3D observer_perspective_2;
+
   Universe (
     int minX, int maxX, int minY, int maxY, int minZ, int maxZ,
     int myWidth, int myHeight
@@ -60,6 +66,10 @@ class Universe {
     this.scaleUniverse     = false;
 
     this.mode = Mode.NORMAL;
+
+    float[][] points_cavalier = {{fx,0,fz,1}};
+    int[][] lines_cavalier = {{0,0}};
+    this.observer_cavalier = new Object3D(points_cavalier,lines_cavalier);
   }
 
   void printObjects () {
@@ -235,6 +245,7 @@ class Universe {
 
     this.grid.updateRotationUniverse(axis,dir,this.dr);
     this.axis.updateRotationUniverse(axis,dir,this.dr);
+    this.observer_cavalier.updateRotationUniverse(axis,dir,this.dr);
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].updateRotationUniverse(axis,dir,this.dr);
   }
@@ -266,6 +277,7 @@ class Universe {
 
     this.grid.updateScaleUniverse(axis,dir,this.ds);
     this.axis.updateScaleUniverse(axis,dir,this.ds);
+    this.observer_cavalier.updateScaleUniverse(axis,dir,this.ds);
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].updateScaleUniverse(axis,dir,this.ds);
   }
@@ -296,6 +308,7 @@ class Universe {
 
     this.grid.updateTranslationUniverse(axis,dir,this.dt);
     this.axis.updateTranslationUniverse(axis,dir,this.dt);
+    this.observer_cavalier.updateTranslationUniverse(axis,dir,this.dt);
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].updateTranslationUniverse(axis,dir,this.dt);
   }
@@ -303,6 +316,8 @@ class Universe {
   void update (Projection proj) {
     this.axis.update(this.config,proj,this.fx,this.fz);
     this.grid.update(this.config,proj,this.fx,this.fz);
+
+    this.observer_cavalier.update(this.config,proj,this.fx,this.fz);
 
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].update(this.config,proj,this.fx,this.fz);
@@ -324,6 +339,8 @@ class Universe {
     // Here, axis must be rendered after grid...
     if (this.showGrid) this.grid.render(false,0,true);
     if (this.showAxis) this.axis.render(false,0,true);
+
+    this.observer_cavalier.render(false,0,true);
 
     if (this.mode == Mode.NORMAL) {
       //-----------------------------------------------------------------------
@@ -465,7 +482,7 @@ class Universe {
           faces[count].r = Float.parseFloat(pieces[num_vertices+1]);
           faces[count].g = Float.parseFloat(pieces[num_vertices+2]);
           faces[count].b = Float.parseFloat(pieces[num_vertices+3]);
-          faces[count].setRGB();
+          faces[count].setColor();
           if (++count==sizef) {
             count = 0;
             step = ROT;
@@ -495,6 +512,10 @@ class Universe {
           Object3D obj = new Object3D(name,obj_aux.points,obj_aux.lines,faces);
           obj.tx = tx; obj.ty = ty; obj.tz = tz;
           objects[curr_object++] = obj;
+
+          for (int j = 0; j < faces.length; j++) {
+            faces[j].points = obj.points;
+          }
 
           step = NAME;
         }
@@ -526,11 +547,31 @@ class Universe {
 
   float[][] calculateNorms (Face[] faces) {
     float[][] norms = new float[faces.length][3];
+    for (int i = 0; i < faces.length; i++) {
+      Face f = faces[i];
+      int v1 = f.pointIndexes[0];
+      int v2 = f.pointIndexes[1];
+      int v3 = f.pointIndexes[2];
+      float p1x = f.points[v1][0], p1y = f.points[v1][1], p1z = f.points[v1][2];
+      float p2x = f.points[v2][0], p2y = f.points[v2][1], p2z = f.points[v2][2];
+      float p3x = f.points[v3][0], p3y = f.points[v3][1], p3z = f.points[v3][2];
+      float nx =  (p3y-p2y)*(p1z-p2z)-(p1y-p2y)*(p3z-p2z);
+      float ny =  (p3z-p2z)*(p1x-p2x)-(p1z-p2z)*(p3x-p2x);
+      float nz =  (p3x-p2x)*(p1y-p2y)-(p1x-p2x)*(p3y-p2y);
+      norms[i][0] = nx;
+      norms[i][1] = ny;
+      norms[i][2] = nz;
+    }
     return norms;
   }
 
   Face[] getVisibleFaces (Face[] faces, float[][] norms) {
-      return faces;
+    Face[] tmpfaces = new Face[faces.length];
+    int count = 0;
+    for (int i = 0; i < faces.length; i++) {
+      
+    }
+    return faces;
   }
 
   void sortFacesByAvgZ (Face[] faces, int[] objIds) {

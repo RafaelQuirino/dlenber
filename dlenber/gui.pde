@@ -132,10 +132,10 @@ class Checkbox {
     int x2 = x1, y2 = y1 + this.h;
     int x3 = x0, y3 = y2;
 
-    lin_bres(x0,y0,x1,y1,this.myColor);
-    lin_bres(x1,y1,x2,y2,this.myColor);
-    lin_bres(x2,y2,x3,y3,this.myColor);
-    lin_bres(x3,y3,x0,y0,this.myColor);
+    my_line(x0,y0,x1,y1,this.myColor);
+    my_line(x1,y1,x2,y2,this.myColor);
+    my_line(x2,y2,x3,y3,this.myColor);
+    my_line(x3,y3,x0,y0,this.myColor);
 
     print_font(
       this.label,font,
@@ -144,8 +144,8 @@ class Checkbox {
       fill_color
     );
     if (this.checked) {
-      lin_bres(x0,y0,x2,y2,this.myColor);
-      lin_bres(x1,y1,x3,y3,this.myColor);
+      my_line(x0,y0,x2,y2,this.myColor);
+      my_line(x1,y1,x3,y3,this.myColor);
     }
   }
 

@@ -12,6 +12,7 @@ class Face {
   // RGB color component
   float r,g,b; //percentage
   int   R,G,B; //absolute
+  color myColor;
 
   // Average z-index
   float avgZ;
@@ -56,6 +57,18 @@ class Face {
     this.B = (int) (b*255.0);
   }
 
+  void setColor () {
+    this.setRGB();
+    this.myColor = color(this.R,this.G,this.B);
+  }
+
+  void setColor (color thecolor) {
+    this.R = (int) red(thecolor);   this.r = (float) this.R/255.0;
+    this.G = (int) green(thecolor); this.g = (float) this.G/255.0;
+    this.B = (int) blue(thecolor);  this.b = (float) this.B/255.0;
+    this.myColor = thecolor;
+  }
+
   void addPointIndex (int index) {
     this.pointIndexes[this.listSize++] = index;
   }
@@ -70,8 +83,6 @@ class Face {
   }
 
   void render (float[][] points, boolean selected) {
-    color c = color(R,G,B);
-
     // Test --------------------------------------------------------------------
     if (false) {
       float[][] p = points;
@@ -103,10 +114,10 @@ class Face {
 
     // Processing like fill polygon --------------------------------------------
     if (selected) stroke(YELLOW);
-    else          stroke(c);
+    else          stroke(this.myColor);
 
     // scanline_fill(points,pointIndexes,listSize,c);
-    scanline_fill_2(points,pointIndexes,listSize,c);
+    my_fill_poly(points,pointIndexes,listSize,this.myColor);
 
     stroke(fill_color);
     //--------------------------------------------------------------------------

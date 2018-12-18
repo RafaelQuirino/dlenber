@@ -1,4 +1,21 @@
 //==============================================================================
+// Algorithms interface
+//==============================================================================
+void my_line (int xi, int yi, int xf, int yf, color thecolor) {
+  // lin_bres(xi,yi,xf,yf,thecolor);
+
+  stroke(thecolor);
+  line(xi,yi,xf,yf);
+  stroke(fill_color);
+}
+
+void my_fill_poly (float[][] points, int[] pointIndexes, int numpoints, color thecolor) {
+  // fill_poly(points, pointIndexes, numpoints, thecolor);
+  fill_poly_processing(points, pointIndexes, numpoints, thecolor);
+}
+//==============================================================================
+
+//==============================================================================
 // Rasterization algorithms
 //==============================================================================
 
@@ -163,7 +180,7 @@ void circ_bres(int x0, int y0, int radius, color thecolor) {
 //------------------------------------------------------------------------------
 // POLYGON FILLING ALGORITHMS
 //------------------------------------------------------------------------------
-void scanline_fill (float[][] points, int[] pointIndexes, int numpoints, color thecolor) {
+void fill_poly (float[][] points, int[] pointIndexes, int numpoints, color thecolor) {
   int n = numpoints;
 
   // Setting poly constants;
@@ -229,7 +246,7 @@ void scanline_fill (float[][] points, int[] pointIndexes, int numpoints, color t
   }
 }
 
-void scanline_fill_2 (float[][] points, int[] pointIndexes, int numpoints, color thecolor) {
+void fill_poly_processing (float[][] points, int[] pointIndexes, int numpoints, color thecolor) {
   fill(thecolor);
   beginShape();
   for (int i = 0; i < numpoints; i++) {
