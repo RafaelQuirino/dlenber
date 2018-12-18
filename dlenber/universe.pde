@@ -43,8 +43,8 @@ class Universe {
   {
     this.config = new Config(minX,maxX,minY,maxY,minZ,maxZ,myWidth,myHeight);
 
-    this.fx = this.config.minX * 10.0f;
-    this.fz = this.config.minZ * 10.0f;
+    this.fx = this.config.minX * 50.0f;
+    this.fz = this.config.minZ * 50.0f;
 
     this.showAxis = true;
     this.showGrid = true;
@@ -67,9 +67,11 @@ class Universe {
 
     this.mode = Mode.NORMAL;
 
+    // Objects to represent observers ------------------------------------------
     float[][] points_cavalier = {{fx,0,fz,1}};
     int[][] lines_cavalier = {{0,0}};
     this.observer_cavalier = new Object3D(points_cavalier,lines_cavalier);
+    //--------------------------------------------------------------------------
   }
 
   void printObjects () {
@@ -245,7 +247,6 @@ class Universe {
 
     this.grid.updateRotationUniverse(axis,dir,this.dr);
     this.axis.updateRotationUniverse(axis,dir,this.dr);
-    this.observer_cavalier.updateRotationUniverse(axis,dir,this.dr);
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].updateRotationUniverse(axis,dir,this.dr);
   }
@@ -277,7 +278,6 @@ class Universe {
 
     this.grid.updateScaleUniverse(axis,dir,this.ds);
     this.axis.updateScaleUniverse(axis,dir,this.ds);
-    this.observer_cavalier.updateScaleUniverse(axis,dir,this.ds);
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].updateScaleUniverse(axis,dir,this.ds);
   }
@@ -308,7 +308,6 @@ class Universe {
 
     this.grid.updateTranslationUniverse(axis,dir,this.dt);
     this.axis.updateTranslationUniverse(axis,dir,this.dt);
-    this.observer_cavalier.updateTranslationUniverse(axis,dir,this.dt);
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].updateTranslationUniverse(axis,dir,this.dt);
   }
@@ -316,8 +315,6 @@ class Universe {
   void update (Projection proj) {
     this.axis.update(this.config,proj,this.fx,this.fz);
     this.grid.update(this.config,proj,this.fx,this.fz);
-
-    this.observer_cavalier.update(this.config,proj,this.fx,this.fz);
 
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].update(this.config,proj,this.fx,this.fz);
@@ -340,8 +337,6 @@ class Universe {
     if (this.showGrid) this.grid.render(false,0,true);
     if (this.showAxis) this.axis.render(false,0,true);
 
-    this.observer_cavalier.render(false,0,true);
-
     if (this.mode == Mode.NORMAL) {
       //-----------------------------------------------------------------------
       // NORMAL rendering
@@ -358,14 +353,16 @@ class Universe {
         }
       }
 
-      float[][] norms = calculateNorms(faces);
-      faces = getVisibleFaces(faces,norms);
-      sortFacesByAvgZ(faces,objIds);
+      float[][] norms = calculateNorms(faces,objIds);
+      boolean[] visibilities = getVisibleFaces(faces,norms,objIds);
+      sortFacesByAvgZ(faces,objIds,visibilities);
 
-      for (int i = 0; i < faces.length; i++) {       // from smallest to biggest avgZ
+      for (int i = 0; i < faces.length; i++) { // from smallest to biggest avgZ
       // for (int i = faces.length-1; i >= 0; i--) { // from biggest to smallest avgZ
-        boolean selected = objIds[i] == this.selectedObject ? true : false;
-        faces[i].render(this.objects[objIds[i]].projection,selected);
+        if (visibilities[i]) {
+          boolean selected = objIds[i] == this.selectedObject ? true : false;
+          faces[i].render(this.objects[objIds[i]].projection,selected);
+        }
       }
 
       // Rendering just the first object's first face, for testing...
@@ -513,10 +510,6 @@ class Universe {
           obj.tx = tx; obj.ty = ty; obj.tz = tz;
           objects[curr_object++] = obj;
 
-          for (int j = 0; j < faces.length; j++) {
-            faces[j].points = obj.points;
-          }
-
           step = NAME;
         }
       }//else (if(i==0),if(i==1),if(i==2))
@@ -545,19 +538,20 @@ class Universe {
     return numFaces;
   }
 
-  float[][] calculateNorms (Face[] faces) {
+  float[][] calculateNorms (Face[] faces, int[] objIds) {
     float[][] norms = new float[faces.length][3];
     for (int i = 0; i < faces.length; i++) {
       Face f = faces[i];
+      Object3D o = this.objects[objIds[i]];
       int v1 = f.pointIndexes[0];
       int v2 = f.pointIndexes[1];
       int v3 = f.pointIndexes[2];
-      float p1x = f.points[v1][0], p1y = f.points[v1][1], p1z = f.points[v1][2];
-      float p2x = f.points[v2][0], p2y = f.points[v2][1], p2z = f.points[v2][2];
-      float p3x = f.points[v3][0], p3y = f.points[v3][1], p3z = f.points[v3][2];
-      float nx =  (p3y-p2y)*(p1z-p2z)-(p1y-p2y)*(p3z-p2z);
-      float ny =  (p3z-p2z)*(p1x-p2x)-(p1z-p2z)*(p3x-p2x);
-      float nz =  (p3x-p2x)*(p1y-p2y)-(p1x-p2x)*(p3y-p2y);
+      float p1x = o.points[v1][0], p1y = o.points[v1][1], p1z = o.points[v1][2];
+      float p2x = o.points[v2][0], p2y = o.points[v2][1], p2z = o.points[v2][2];
+      float p3x = o.points[v3][0], p3y = o.points[v3][1], p3z = o.points[v3][2];
+      float nx = ((p3y-p2y)*(p1z-p2z))-((p1y-p2y)*(p3z-p2z));
+      float ny = ((p3z-p2z)*(p1x-p2x))-((p1z-p2z)*(p3x-p2x));
+      float nz = ((p3x-p2x)*(p1y-p2y))-((p1x-p2x)*(p3y-p2y));
       norms[i][0] = nx;
       norms[i][1] = ny;
       norms[i][2] = nz;
@@ -565,24 +559,67 @@ class Universe {
     return norms;
   }
 
-  Face[] getVisibleFaces (Face[] faces, float[][] norms) {
-    Face[] tmpfaces = new Face[faces.length];
-    int count = 0;
+  boolean[] getVisibleFaces (Face[] faces, float[][] norms, int[] objIds) {
+    boolean[] visibilities = new boolean[faces.length];
+    for (int i = 0; i < faces.length; i++)
+      visibilities[i] = false;
+
     for (int i = 0; i < faces.length; i++) {
-      
+      Face f = faces[i];
+      Object3D o = this.objects[objIds[i]];
+      int v2 = f.pointIndexes[1];
+
+      float px, py, pz;
+
+      //------------------------------------------------------------------------
+      // Vector of observer, the observer position
+      // Only works for Projection.PERSPECTIVE_1 (in theory...)
+      //------------------------------------------------------------------------
+      if (projection == Projection.PERSPECTIVE_1 ||
+          projection == Projection.PERSPECTIVE_2)
+      {
+        px = 0;
+        py = 0;
+        pz = -this.fz;
+      }
+      //------------------------------------------------------------------------
+
+      //------------------------------------------------------------------------
+      // Vector of observer, the observer position
+      // Only works for Projection.CAVALIER (in theory...)
+      //------------------------------------------------------------------------
+      else {
+        px = -this.fx * cos(PI/3.0);//(sqrt(2)/2.0);
+        py = this.config.myWidth*2;
+        pz = -this.fz * (sin(PI/2.0)+sin(PI/6.0));//(sqrt(2)/2.0);
+      }
+      //------------------------------------------------------------------------
+
+      float p2x = o.points[v2][0], p2y = o.points[v2][1], p2z = o.points[v2][2];
+      float nx = norms[i][0], ny = norms[i][1], nz = norms[i][2];
+      float nxl = nx*(px-p2x) + ny*(py-p2y) + nz*(pz-p2z);
+
+      // print("face: "+i+", obj: "+objIds[i]+", n.l: "+nxl+"\n");
+
+      if (nxl > 0) {
+        visibilities[i] = true;
+      }
     }
-    return faces;
+
+    return visibilities;
   }
 
-  void sortFacesByAvgZ (Face[] faces, int[] objIds) {
+  void sortFacesByAvgZ (Face[] faces, int[] objIds, boolean[] visibilities) {
     int i, j;
     Face keyface;
     int objId;
+    boolean visibility;
     int n = faces.length;
     for (i = 1; i < n; i++)
     {
       keyface = faces[i];
       objId = objIds[i];
+      visibility = visibilities[i];
       j = i-1;
 
       // Move elements of arr[0..i-1], that are
@@ -592,10 +629,12 @@ class Universe {
       {
         faces[j+1] = faces[j];
         objIds[j+1] = objIds[j];
+        visibilities[j+1] = visibilities[j];
         j = j-1;
       }
       faces[j+1] = keyface;
       objIds[j+1] = objId;
+      visibilities[j+1] = visibility;
     }
   }
 

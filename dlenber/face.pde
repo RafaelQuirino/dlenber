@@ -83,42 +83,10 @@ class Face {
   }
 
   void render (float[][] points, boolean selected) {
-    // Test --------------------------------------------------------------------
-    if (false) {
-      float[][] p = points;
-      int[] pi = pointIndexes;
-      int n = listSize;
-      int f = pi[0]; // first
-      float minX=p[f][0], maxX=p[f][0], minY=p[f][1], maxY=p[f][1];
-      for (int i = 1; i < n; i++) {
-        float x = p[pi[i]][0], y = p[pi[i]][1];
-        if (x < minX) minX = x;
-        if (x > maxX) maxX = x;
-        if (y < minY) minY = y;
-        if (y > maxY) maxY = y;
-      }
-      float x=minX, y=minY, w=(maxX-minX), h=(maxY-minY);
-      int x0 = (int)x;
-      int y0 = ((int)y) + 2;
-      if (true) {
-        for (int i = 0; i < 100; i++) {
-          lin_bres(x0,y0+i,x0+100,y0+i,color(255,0,0));
-        }
-      } else {
-        fill(color(255,0,0));
-        rect(x0,y0,100,100);
-        fill(fill_color);
-      }
-    }
-    //--------------------------------------------------------------------------
-
-    // Processing like fill polygon --------------------------------------------
+    // Calling fill polygon in algorithms.pdf ----------------------------------
     if (selected) stroke(YELLOW);
     else          stroke(this.myColor);
-
-    // scanline_fill(points,pointIndexes,listSize,c);
-    my_fill_poly(points,pointIndexes,listSize,this.myColor);
-
+    my_fill_poly(points,this.pointIndexes,this.listSize,this.myColor);
     stroke(fill_color);
     //--------------------------------------------------------------------------
   }

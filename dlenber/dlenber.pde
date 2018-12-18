@@ -12,7 +12,8 @@ void setup () {
   init_gui();
   init_events();
 
-  projection = Projection.CAVALIER;
+  //projection = Projection.CAVALIER;
+  projection = Projection.PERSPECTIVE_1;
   sincos = new SinesAndCosines();
 
   universe = new Universe (
