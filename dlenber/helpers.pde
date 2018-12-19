@@ -239,10 +239,10 @@ float[][] get_isometric_mat () {
 
 float[][] get_perspective_1_mat (float fz) {
   float[][] PERSPECTIVE_1 = {
-    {1.0f, 0.0f, 0.0f,  0.0f},
-    {0.0f, 1.0f, 0.0f,  0.0f},
-    {0.0f, 0.0f, 1.0f, -1.0f/fz},
-    {0.0f, 0.0f, 0.0f,  1.0f}
+    {1.0f, 0.0f,  0.0f,  0.0f},
+    {0.0f, 1.0f,  0.0f,  0.0f},
+    {0.0f, 0.0f,  1.0f, -1.0f/fz},
+    {0.0f, 0.0f,  0.0f,  1.0f}
   };
   return PERSPECTIVE_1;
 }

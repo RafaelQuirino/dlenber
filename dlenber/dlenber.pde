@@ -20,7 +20,8 @@ void setup () {
     -100,  100,
     -100,  100,
     -100,  100,
-    width, height
+    width, height,
+    projection
   );
 
   //universe.mode = Mode.WIREFRAME;

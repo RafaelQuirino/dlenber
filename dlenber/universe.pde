@@ -30,21 +30,24 @@ class Universe {
 
   Mode mode;
 
-  Object3D observer_cavalier;
-  Object3D observer_cabinet;
-  Object3D observer_isometric;
-  Object3D observer_perspective_1;
-  Object3D observer_perspective_2;
+  Observer3D observer_cavalier;
+  Observer3D observer_cabinet;
+  Observer3D observer_isometric;
+  Observer3D observer_perspective_1;
+  Observer3D observer_perspective_2;
+
+  Projection currentProjection;
 
   Universe (
     int minX, int maxX, int minY, int maxY, int minZ, int maxZ,
-    int myWidth, int myHeight
+    int myWidth, int myHeight, Projection currentProjection
   )
   {
     this.config = new Config(minX,maxX,minY,maxY,minZ,maxZ,myWidth,myHeight);
+    this.currentProjection = currentProjection;
 
-    this.fx = this.config.minX * 50.0f;
-    this.fz = this.config.minZ * 50.0f;
+    this.fx = this.config.minX * 64.0f;
+    this.fz = this.config.minZ * 64.0f;
 
     this.showAxis = true;
     this.showGrid = true;
@@ -68,9 +71,31 @@ class Universe {
     this.mode = Mode.NORMAL;
 
     // Objects to represent observers ------------------------------------------
-    float[][] points_cavalier = {{fx,0,fz,1}};
-    int[][] lines_cavalier = {{0,0}};
-    this.observer_cavalier = new Object3D(points_cavalier,lines_cavalier);
+    this.observer_cavalier = new Observer3D(
+      -this.fx*cos(PI/3.0f),
+      this.config.myWidth*3,
+      -this.fz*(sin(PI/2.0f)+sin(PI/6.0f))
+    );
+    this.observer_cabinet = new Observer3D(
+      -this.fx*cos(PI/3.0f),
+      this.config.myWidth*3,
+      -this.fz*(sin(PI/2.0f)+sin(PI/6.0f))
+    );
+    this.observer_isometric = new Observer3D(
+      -this.fx*cos(PI/3.0f),
+      this.config.myWidth*3,
+      -this.fz*(sin(PI/2.0f)+sin(PI/6.0f))
+    );
+    this.observer_perspective_1 = new Observer3D(
+      0,//this.fx * cos(PI/6.0f),//0,
+      0,//this.config.maxY * sin(PI/6.0f),//0,
+      -this.fz
+    );
+    this.observer_perspective_2 = new Observer3D(
+      -this.fx,
+      0,
+      -this.fz
+    );
     //--------------------------------------------------------------------------
   }
 
@@ -242,11 +267,20 @@ class Universe {
       this.rz = dir == Direction.POSITIVE ? this.rz + angle : this.rz - angle;
   }
 
+  void updateRotationObservers (Axis axis, Direction dir, float angle) {
+    this.observer_cavalier.updateRotation(axis,dir,angle);
+    this.observer_cabinet.updateRotation(axis,dir,angle);
+    this.observer_isometric.updateRotation(axis,dir,angle);
+    this.observer_perspective_1.updateRotation(axis,dir,angle);
+    this.observer_perspective_2.updateRotation(axis,dir,angle);
+  }
+
   void rotate (Axis axis, Direction dir) {
     this.updateRotation(axis,dir,this.dr);
 
     this.grid.updateRotationUniverse(axis,dir,this.dr);
     this.axis.updateRotationUniverse(axis,dir,this.dr);
+    this.updateRotationObservers(axis,dir,this.dr);
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].updateRotationUniverse(axis,dir,this.dr);
   }
@@ -357,8 +391,21 @@ class Universe {
       boolean[] visibilities = getVisibleFaces(faces,norms,objIds);
       sortFacesByAvgZ(faces,objIds,visibilities);
 
-      for (int i = 0; i < faces.length; i++) { // from smallest to biggest avgZ
-      // for (int i = faces.length-1; i >= 0; i--) { // from biggest to smallest avgZ
+      int start, limit, inc;
+      // From biggest to smallet avgZ
+      if (false && projection == Projection.PERSPECTIVE_1 || projection == Projection.PERSPECTIVE_2) {
+        start = faces.length-1;
+        limit = -1;
+        inc = -1;
+      }
+      // From smallest to biggest avgZ
+      else {
+      // if (true) {
+        start = 0;
+        limit = faces.length;
+        inc = 1;
+      }
+      for (int i = start; i != limit; i += inc) {
         if (visibilities[i]) {
           boolean selected = objIds[i] == this.selectedObject ? true : false;
           faces[i].render(this.objects[objIds[i]].projection,selected);
@@ -538,6 +585,22 @@ class Universe {
     return numFaces;
   }
 
+  Observer3D chooseObserver3D () {
+    Observer3D obsv = this.observer_cavalier;
+    if (projection == Projection.CAVALIER)
+      obsv = this.observer_cavalier;
+    else if (projection == Projection.CABINET)
+      obsv = this.observer_cabinet;
+    else if (projection == Projection.ISOMETRIC)
+      obsv = this.observer_isometric;
+    else if (projection == Projection.PERSPECTIVE_1)
+      obsv = this.observer_perspective_1;
+    else if (projection == Projection.PERSPECTIVE_2)
+      obsv = this.observer_perspective_2;
+
+    return obsv;
+  }
+
   float[][] calculateNorms (Face[] faces, int[] objIds) {
     float[][] norms = new float[faces.length][3];
     for (int i = 0; i < faces.length; i++) {
@@ -569,30 +632,14 @@ class Universe {
       Object3D o = this.objects[objIds[i]];
       int v2 = f.pointIndexes[1];
 
+      //------------------------------------------------------------------------
+      // Vector of observer, the observer's position
+      //------------------------------------------------------------------------
       float px, py, pz;
-
-      //------------------------------------------------------------------------
-      // Vector of observer, the observer position
-      // Only works for Projection.PERSPECTIVE_1 (in theory...)
-      //------------------------------------------------------------------------
-      if (projection == Projection.PERSPECTIVE_1 ||
-          projection == Projection.PERSPECTIVE_2)
-      {
-        px = 0;
-        py = 0;
-        pz = -this.fz;
-      }
-      //------------------------------------------------------------------------
-
-      //------------------------------------------------------------------------
-      // Vector of observer, the observer position
-      // Only works for Projection.CAVALIER (in theory...)
-      //------------------------------------------------------------------------
-      else {
-        px = -this.fx * cos(PI/3.0);//(sqrt(2)/2.0);
-        py = this.config.myWidth*2;
-        pz = -this.fz * (sin(PI/2.0)+sin(PI/6.0));//(sqrt(2)/2.0);
-      }
+      Observer3D obsv = this.chooseObserver3D();
+      px = obsv.x;
+      py = obsv.y;
+      pz = obsv.z;
       //------------------------------------------------------------------------
 
       float p2x = o.points[v2][0], p2y = o.points[v2][1], p2z = o.points[v2][2];
