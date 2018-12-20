@@ -193,13 +193,14 @@ class Face {
     // print_rgb(rgb);
     // print_separator();
 
-    float[] rgb = new float[3];
-    float l = illumination+0.2;
-    // float l = illumination > 0.5 ? 1+(illumination-0.5) : illumination;
-    rgb[0] = ((float)this.R)*(l);
-    rgb[1] = ((float)this.G)*(l);
-    rgb[2] = ((float)this.B)*(l);
+    // float[] rgb = new float[3];
+    // float l = illumination+0.2;
+    // // float l = illumination > 0.5 ? 1+(illumination-0.5) : illumination;
+    // rgb[0] = ((float)this.R)*(l);
+    // rgb[1] = ((float)this.G)*(l);
+    // rgb[2] = ((float)this.B)*(l);
 
+    float[] rgb = shade_color(this.R,this.G,this.B,illumination);
     // int[] rgb = shade_color(this.R,this.G,this.B,illumination);
 
     color c = color((int)rgb[0],(int)rgb[1],(int)rgb[2]);

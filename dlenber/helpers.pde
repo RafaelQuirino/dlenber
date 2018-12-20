@@ -424,7 +424,18 @@ void print_separator() {
   print("===================================================================\n");
 }
 
-int[] shade_color (int r, int g, int b, float illumination) {
+float[] shade_color (int r, int g, int b, float illumination) {
+  float[] rgb = new float[3];
+  float l = illumination+0.2;
+  // float l = illumination > 0.5 ? 1+(illumination-0.5) : illumination;
+  rgb[0] = ((float)r)*(l);
+  rgb[1] = ((float)g)*(l);
+  rgb[2] = ((float)b)*(l);
+
+  return rgb;
+}
+
+int[] shade_color_2 (int r, int g, int b, float illumination) {
   float alpha = 1.0;
   float l = 255 * illumination;
   float aR = l;
