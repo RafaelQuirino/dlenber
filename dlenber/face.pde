@@ -73,6 +73,20 @@ class Face {
     this.myColor = thecolor;
   }
 
+  float[] getCenter(float[][] points) {
+    float meanX=0.0f, meanY=0.0f, meanZ=0.0f;
+    for (int i = 0; i < this.listSize; i++) {
+      meanX += points[this.pointIndexes[i]][0];
+      meanY += points[this.pointIndexes[i]][1];
+      meanZ += points[this.pointIndexes[i]][2];
+    }
+    meanX /= this.listSize;
+    meanY /= this.listSize;
+    meanZ /= this.listSize;
+    float[] center = {meanX,meanY,meanZ};
+    return center;
+  }
+
   void addPointIndex (int index) {
     this.pointIndexes[this.listSize++] = index;
   }
@@ -111,17 +125,47 @@ class Face {
     return normal;
   }
 
-  float calculatePhongIllumination () {
+  float calculatePhongIllumination (Observer3D obsv, Light3D light, float[][] points) {
+    // Parameters
+    float Iamb = 0.8; // Ambiente light intensity
+    int v = this.pointIndexes[1];
+    float px = points[v][0];
+    float py = points[v][1];
+    float pz = points[v][2];
+    float obsvx  = obsv.x;
+    float obsvy  = obsv.y;
+    float obsvz  = obsv.z;
+    float lightx = light.lamp.points[0][0];
+    float lighty = light.lamp.points[0][1];
+    float lightz = light.lamp.points[0][2];
+
+    // Calculate vectors L, N, V, cos(theta) -----------------------------------
+    float[] L = {(lightx-px), (lighty-py), (lightz-pz)};
+    normalize_vector(L);
+    float[] N = this.calculateNormal(points);
+    normalize_vector(N);
+    float[] V = {(obsvx-px), (obsvy-py), (obsvz-pz)};
+    normalize_vector(V);
+    float cos_theta = cos_vectors(N,L);
+    // float theta = acos(cos_theta);
+    //--------------------------------------------------------------------------
+
     // Ambient -----------------------------------------------------------------
+    float Ia = this.material.Ka * Iamb;
     //--------------------------------------------------------------------------
 
     // Diffuse -----------------------------------------------------------------
+    float Id = this.material.Kd * light.Ii * cos_theta;
     //--------------------------------------------------------------------------
 
     // Specular ----------------------------------------------------------------
+    float Is = light.Ii * this.material.Ks * pow(cos_theta,this.material.alpha);
     //--------------------------------------------------------------------------
-    
-    return 1.0f;
+
+    float illumination = Ia + Id + Is;
+    if (illumination < 0) illumination = 0;
+
+    return illumination;
   }
 
   void render (float[][] points, boolean selected) {
@@ -129,6 +173,38 @@ class Face {
     if (selected) stroke(YELLOW);
     else          stroke(this.myColor);
     my_fill_poly(points,this.pointIndexes,this.listSize,this.myColor);
+    stroke(fill_color);
+    //--------------------------------------------------------------------------
+  }
+
+  void render_2 (float[][] points, boolean selected, float illumination) {
+    // Calling fill polygon in algorithms.pdf ----------------------------------
+    if (selected) stroke(YELLOW);
+    else          stroke(this.myColor);
+
+    // int[] orig_rgb = {this.R,this.G,this.B};
+    // print_rgb(orig_rgb);
+    //
+    // float[] hsl = rgbToHsl(this.R,this.G,this.B);
+    // print_hsl(hsl);
+    // hsl[2] = illumination;
+    // print_hsl(hsl);
+    // int[] rgb = hslToRgb(hsl[0],hsl[1],hsl[2]);
+    // print_rgb(rgb);
+    // print_separator();
+
+    float[] rgb = new float[3];
+    float l = illumination+0.2;
+    // float l = illumination > 0.5 ? 1+(illumination-0.5) : illumination;
+    rgb[0] = ((float)this.R)*(l);
+    rgb[1] = ((float)this.G)*(l);
+    rgb[2] = ((float)this.B)*(l);
+
+    // int[] rgb = shade_color(this.R,this.G,this.B,illumination);
+
+    color c = color((int)rgb[0],(int)rgb[1],(int)rgb[2]);
+    my_fill_poly(points,this.pointIndexes,this.listSize,c);
+
     stroke(fill_color);
     //--------------------------------------------------------------------------
   }

@@ -38,6 +38,8 @@ class Universe {
 
   Projection currentProjection;
 
+  Light3D light;
+
   Universe (
     int minX, int maxX, int minY, int maxY, int minZ, int maxZ,
     int myWidth, int myHeight, Projection currentProjection
@@ -97,6 +99,8 @@ class Universe {
       -this.fz
     );
     //--------------------------------------------------------------------------
+
+    this.light = getStandardLight(this.config.maxX,this.config.maxY,this.config.maxZ);
   }
 
   void printObjects () {
@@ -407,10 +411,19 @@ class Universe {
       }
       for (int i = start; i != limit; i += inc) {
         if (visibilities[i]) {
+
+          Observer3D obsv  = chooseObserver3D();
+          Light3D light    = this.light;
+          float[][] points = this.objects[objIds[i]].points;
+          float illumination = faces[i].calculatePhongIllumination(obsv,light,points);
+          // print("Phong: " + illumination + "\n");
+
           boolean selected = objIds[i] == this.selectedObject ? true : false;
-          faces[i].render(this.objects[objIds[i]].projection,selected);
+          // faces[i].render(this.objects[objIds[i]].projection,selected);
+          faces[i].render_2(this.objects[objIds[i]].projection,selected,illumination);
         }
       }
+      // exit();
 
       // Rendering just the first object's first face, for testing...
       // boolean selected = 0 == this.selectedObject ? true : false;

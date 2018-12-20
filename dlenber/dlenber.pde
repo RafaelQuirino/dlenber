@@ -32,6 +32,12 @@ void setup () {
     universe.addObject(objects[i]);
   }
   universe.printObjects();
+
+  // float[] vec = {3,5,9};
+  // print_vector(vec);
+  // normalize_vector(vec);
+  // print_vector(vec);
+  // exit();
 }
 
 int flag = 0;

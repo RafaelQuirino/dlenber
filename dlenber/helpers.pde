@@ -315,3 +315,132 @@ String[] read_file (String filename) {
   String[] lines = loadStrings(filename);
   return lines;
 }
+
+float magnitude_vector (float[] vector) {
+  float mag = 0.0f;
+  for (int i = 0; i < vector.length; i++) {
+    mag += vector[i]*vector[i];
+  }
+  mag = sqrt(mag);
+
+  return mag;
+}
+
+void normalize_vector (float[] vector) {
+  float mag = magnitude_vector(vector);
+
+  if (mag > 0) {
+    for (int i = 0; i < vector.length; i++) {
+      vector[i] = vector[i]/mag;
+    }
+  }
+}
+
+float dot_vectors (float[] u, float[] v) {
+  float dot = 0.0f;
+  for (int i = 0; i < u.length; i++) {
+    dot += u[i] * v[i];
+  }
+
+  return dot;
+}
+
+float cos_vectors (float[] u, float[] v) {
+  float magu = magnitude_vector(u);
+  float magv = magnitude_vector(v);
+  return dot_vectors(u,v) / (magu*magv);
+}
+
+void print_vector (float[] vector) {
+  String s = "[";
+  for (int i = 0; i < vector.length-1; i++)
+    s += vector[i] + ",";
+  s += vector[vector.length-1] + "]";
+  print(s+"\n");
+}
+
+float[] rgbToHsl (int R, int G, int B) {
+  float r = (float)R/255.0;
+  float g = (float)G/255.0;
+  float b = (float)B/255.0;
+
+  float max = max(r, g, b), min = min(r, g, b);
+  float h, s, l = ((float)(max+min))/2.0;
+
+  if (max == min) {
+    h = s = 0.0f; // achromatic
+  } else {
+    float d = (float)max - (float)min;
+    s = l > 0.5 ? d / (2.0f-max-min) : d/(float)(max + min);
+
+    if      (max == r) h = (g - b) / d + (g < b ? 6.0f : 0.0f);
+    else if (max == g) h = (b - r) / d + 2.0f;
+    else               h = (r - g) / d + 4.0f;
+
+    h /= 6.0f;
+  }
+
+  float[] hsl = {h,s,l};
+
+  return hsl;
+}
+
+float hue2rgb (float p, float q, float t) {
+  if (t < 0.0f) t += 1.0f;
+  if (t > 1.0f) t -= 1.0f;
+  if (t < 1.0f/6.0f) return p + (q - p) * 6.0f * t;
+  if (t < 1.0f/2.0f) return q;
+  if (t < 2.0f/3.0f) return p + (q - p) * (2.0f/3.0f - t) * 6.0f;
+  return p;
+}
+
+int[] hslToRgb (float h, float s, float l) {
+  float r, g, b;
+
+  if (s == 0) {
+    r = g = b = l; // achromatic
+  } else {
+    float q = l < 0.5 ? l * (1.0f + s) : l + s - l * s;
+    float p = 2.0f * l - q;
+
+    r = hue2rgb(p, q, h + (1.0f/3.0f));
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - (1.0f/3.0f));
+  }
+
+  int[] rgb = {(int)r*255, (int)g*255, (int)b*255};
+  return rgb;
+}
+
+void print_rgb (int[] rgb) {
+  print("rbg: ("+rgb[0]+","+rgb[1]+","+rgb[2]+")\n");
+}
+
+void print_hsl (float[] hsl) {
+  print("hsl: ("+hsl[0]+","+hsl[1]+","+hsl[2]+")\n");
+}
+
+void print_separator() {
+  print("===================================================================\n");
+}
+
+int[] shade_color (int r, int g, int b, float illumination) {
+  float alpha = 1.0;
+  float l = 255 * illumination;
+  float aR = l;
+  float aG = l;
+  float aB = l;
+  float newR = r + (aR - r) * alpha;
+  float newG = g + (aG - g) * alpha;
+  float newB = b + (aB - b) * alpha;
+
+  int[] rgb = {(int)newR, (int)newG, (int)newB};
+  int rsum = (int)(rgb[0]/2.0) + r;
+  int gsum = (int)(rgb[1]/2.0) + g;
+  int bsum = (int)(rgb[2]/2.0) + b;
+  rgb[0] = rsum > 255 ? 255 : rsum;
+  rgb[1] = gsum > 255 ? 255 : gsum;
+  rgb[2] = bsum > 255 ? 255 : bsum;
+
+  return rgb;
+}
