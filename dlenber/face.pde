@@ -239,6 +239,54 @@ class Face {
     return illumination;
   }
 
+  float[] calculatePhongIlluminationNormal_2 (
+    Observer3D obsv, Light3D light, float[][] points, float[] normal
+  )
+  {
+    // Parameters
+    float Iamb = 0.8; // Ambiente light intensity
+    int v = this.pointIndexes[1];
+    float px = points[v][0];
+    float py = points[v][1];
+    float pz = points[v][2];
+    float obsvx  = obsv.x;
+    float obsvy  = obsv.y;
+    float obsvz  = obsv.z;
+    float lightx = light.lamp.points[0][0];
+    float lighty = light.lamp.points[0][1];
+    float lightz = light.lamp.points[0][2];
+
+    // Calculate vectors L, N, V, cos(theta) -----------------------------------
+    float[] L = {(lightx-px), (lighty-py), (lightz-pz)};
+    normalize_vector(L);
+    float[] N = normal;
+    normalize_vector(N);
+    float[] V = {(obsvx-px), (obsvy-py), (obsvz-pz)};
+    normalize_vector(V);
+
+    float cos_theta = cos_vectors(N,L);
+    float theta = acos(cos_theta);
+
+    // float cos_theta = cos(PI/6.0);
+    //--------------------------------------------------------------------------
+
+    // Ambient -----------------------------------------------------------------
+    float Ia = this.material.Ka * Iamb;
+    //--------------------------------------------------------------------------
+
+    // Diffuse -----------------------------------------------------------------
+    float Id = this.material.Kd * light.Ii * cos_theta;
+    //--------------------------------------------------------------------------
+
+    // Specular ----------------------------------------------------------------
+    float Is = light.Ii * this.material.Ks * pow(cos_theta,this.material.alpha);
+    //--------------------------------------------------------------------------
+
+    float[] illumination = {max(Ia,0),max(Id,0),max(Is,0)};
+
+    return illumination;
+  }
+
   float[][] calculateVertexNormals (Object3D obj) {
     float[][] Na_vertices = new float[this.listSize][3];
     for (int i = 0; i < this.listSize; i++) {
@@ -273,6 +321,19 @@ class Face {
     float[] illuminations = new float[normals.length];
     for (int i = 0; i < normals.length; i++) {
       illuminations[i] = calculatePhongIlluminationNormal(obsv,light,obj.points,normals[i]);
+    }
+
+    return illuminations;
+  }
+
+  float[][] calculateVertexIlluminations_2 (Observer3D obsv, Light3D light, Object3D obj) {
+    float[][] normals = calculateVertexNormals(obj);
+    float[][] illuminations = new float[normals.length][3];
+    for (int i = 0; i < normals.length; i++) {
+      float[] illumination = calculatePhongIlluminationNormal_2(obsv,light,obj.points,normals[i]);
+      illuminations[i][0] = illumination[0];
+      illuminations[i][1] = illumination[1];
+      illuminations[i][2] = illumination[2];
     }
 
     return illuminations;
@@ -351,6 +412,24 @@ class Face {
     float[] illuminations = calculateVertexIlluminations (obsv,light,obj);
 
     my_fill_poly_gourard_2(illuminations,obj,points,this.pointIndexes,this.listSize,
+      this.myColor, this.R, this.G, this.B
+    );
+
+    stroke(fill_color);
+  }
+
+  void render_5 (
+    Observer3D obsv, Light3D light, Object3D obj, float[][] points, boolean selected, float illumination
+  )
+  {
+    if (selected) stroke(YELLOW);
+    else          stroke(this.myColor);
+
+    // float[] rgb = shade_color(this.R,this.G,this.B,illumination);
+    // color c = color((int)rgb[0],(int)rgb[1],(int)rgb[2]);
+    float[][] illuminations = calculateVertexIlluminations_2 (obsv,light,obj);
+
+    my_fill_poly_gourard_3(illuminations,light,obj,points,this.pointIndexes,this.listSize,
       this.myColor, this.R, this.G, this.B
     );
 

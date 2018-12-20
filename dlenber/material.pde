@@ -11,7 +11,7 @@ class Material {
 
 Material getStandardDiffuseMaterial () {
   Material diffuse = new Material();
-  diffuse.Ka    = 0.5;//0.2;
+  diffuse.Ka    = 0.4;//0.2;
   diffuse.Kd    = 0.6;
   diffuse.Ks    = 0.5;
   diffuse.alpha = 20;

@@ -463,3 +463,12 @@ int[] shade_color_2 (int r, int g, int b, float illumination) {
 
   return rgb;
 }
+
+color interpolate_colors (int r1, int g1, int b1, int r2, int g2, int b2, float t) {
+ return color
+ (
+   r1 + (r2 - r1) * t,
+   g1 + (g2 - g1) * t,
+   b1 + (b2 - b1) * t
+ );
+}

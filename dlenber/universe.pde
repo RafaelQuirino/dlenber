@@ -425,7 +425,10 @@ class Universe {
           // faces[i].render_3(
           //   obsv,light,this.objects[objIds[i]],this.objects[objIds[i]].projection,selected,illumination
           // );
-          faces[i].render_4(
+          // faces[i].render_4(
+          //   obsv,light,this.objects[objIds[i]],this.objects[objIds[i]].projection,selected,illumination
+          // );
+          faces[i].render_5(
             obsv,light,this.objects[objIds[i]],this.objects[objIds[i]].projection,selected,illumination
           );
         }
