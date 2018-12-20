@@ -17,6 +17,8 @@ class Face {
   // Average z-index
   float avgZ;
 
+  Material material;
+
   Face () {
     this.listLimit = 1024;
     this.listSize = 0;
@@ -28,6 +30,8 @@ class Face {
 
     this.avgZ = 0;
     this.points = null;
+
+    this.material = getStandardDiffuseMaterial();
   }
 
   Face (int[] pointIndexes) {
@@ -80,6 +84,44 @@ class Face {
       avg += z;
     }
     this.avgZ = avg/(float)this.listSize;
+  }
+
+  Face[] getNeighborFaces (Object3D obj) {
+    Face[] neighbors = new Face[1];
+
+    return neighbors;
+  }
+
+  float[] calculateNormal (float[][] points) {
+    float[] normal = new float[3];
+
+    int v1 = this.pointIndexes[0];
+    int v2 = this.pointIndexes[1];
+    int v3 = this.pointIndexes[2];
+    float p1x = points[v1][0], p1y = points[v1][1], p1z = points[v1][2];
+    float p2x = points[v2][0], p2y = points[v2][1], p2z = points[v2][2];
+    float p3x = points[v3][0], p3y = points[v3][1], p3z = points[v3][2];
+    float nx = ((p3y-p2y)*(p1z-p2z))-((p1y-p2y)*(p3z-p2z));
+    float ny = ((p3z-p2z)*(p1x-p2x))-((p1z-p2z)*(p3x-p2x));
+    float nz = ((p3x-p2x)*(p1y-p2y))-((p1x-p2x)*(p3y-p2y));
+    normal[0] = nx;
+    normal[1] = ny;
+    normal[2] = nz;
+
+    return normal;
+  }
+
+  float calculatePhongIllumination () {
+    // Ambient -----------------------------------------------------------------
+    //--------------------------------------------------------------------------
+
+    // Diffuse -----------------------------------------------------------------
+    //--------------------------------------------------------------------------
+
+    // Specular ----------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    
+    return 1.0f;
   }
 
   void render (float[][] points, boolean selected) {

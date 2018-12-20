@@ -387,8 +387,8 @@ class Universe {
         }
       }
 
-      float[][] norms = calculateNorms(faces,objIds);
-      boolean[] visibilities = getVisibleFaces(faces,norms,objIds);
+      float[][] normals = calculateNormals(faces,objIds);
+      boolean[] visibilities = getVisibleFaces(faces,normals,objIds);
       sortFacesByAvgZ(faces,objIds,visibilities);
 
       int start, limit, inc;
@@ -601,25 +601,18 @@ class Universe {
     return obsv;
   }
 
-  float[][] calculateNorms (Face[] faces, int[] objIds) {
-    float[][] norms = new float[faces.length][3];
+  float[][] calculateNormals (Face[] faces, int[] objIds) {
+    float[][] normals = new float[faces.length][3];
     for (int i = 0; i < faces.length; i++) {
       Face f = faces[i];
       Object3D o = this.objects[objIds[i]];
-      int v1 = f.pointIndexes[0];
-      int v2 = f.pointIndexes[1];
-      int v3 = f.pointIndexes[2];
-      float p1x = o.points[v1][0], p1y = o.points[v1][1], p1z = o.points[v1][2];
-      float p2x = o.points[v2][0], p2y = o.points[v2][1], p2z = o.points[v2][2];
-      float p3x = o.points[v3][0], p3y = o.points[v3][1], p3z = o.points[v3][2];
-      float nx = ((p3y-p2y)*(p1z-p2z))-((p1y-p2y)*(p3z-p2z));
-      float ny = ((p3z-p2z)*(p1x-p2x))-((p1z-p2z)*(p3x-p2x));
-      float nz = ((p3x-p2x)*(p1y-p2y))-((p1x-p2x)*(p3y-p2y));
-      norms[i][0] = nx;
-      norms[i][1] = ny;
-      norms[i][2] = nz;
+      float[] normal = f.calculateNormal(o.points);
+      normals[i][0] = normal[0];
+      normals[i][1] = normal[1];
+      normals[i][2] = normal[2];
     }
-    return norms;
+
+    return normals;
   }
 
   boolean[] getVisibleFaces (Face[] faces, float[][] norms, int[] objIds) {
