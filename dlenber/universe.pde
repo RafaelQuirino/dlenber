@@ -51,7 +51,7 @@ class Universe {
     this.fx = this.config.minX * 64.0f;
     this.fz = this.config.minZ * 64.0f;
 
-    this.showAxis = true;
+    this.showAxis = false;
     this.showGrid = true;
 
     this.numObjects = 0;
@@ -420,20 +420,32 @@ class Universe {
           // print("Phong: " + illumination + "\n");
 
           boolean selected = objIds[i] == this.selectedObject ? true : false;
-          // faces[i].render(this.objects[objIds[i]].projection,selected);
-          // faces[i].render_2(this.objects[objIds[i]].projection,selected,illumination);
-          // faces[i].render_3(
-          //   obsv,light,this.objects[objIds[i]],this.objects[objIds[i]].projection,selected,illumination
-          // );
-          // faces[i].render_4(
-          //   obsv,light,this.objects[objIds[i]],this.objects[objIds[i]].projection,selected,illumination
-          // );
-          faces[i].render_5(
-            obsv,light,this.objects[objIds[i]],this.objects[objIds[i]].projection,selected,illumination
-          );
+
+          int render_type = 5;
+
+          if (render_type == 1) {
+            faces[i].render(this.objects[objIds[i]].projection,selected);
+          }
+          else if (render_type == 2) {
+            faces[i].render_2(this.objects[objIds[i]].projection,selected,illumination);
+          }
+          else if (render_type == 3) {
+            faces[i].render_3(
+              obsv,light,this.objects[objIds[i]],this.objects[objIds[i]].projection,selected,illumination
+              );
+          }
+          else if (render_type == 4) {
+            faces[i].render_4(
+              obsv,light,this.objects[objIds[i]],this.objects[objIds[i]].projection,selected,illumination
+            );
+          }
+          else if (render_type == 5) {
+            faces[i].render_5(
+              obsv,light,this.objects[objIds[i]],this.objects[objIds[i]].projection,selected,illumination
+            );
+          }
         }
       }
-      // exit();
 
       // Rendering just the first object's first face, for testing...
       // boolean selected = 0 == this.selectedObject ? true : false;

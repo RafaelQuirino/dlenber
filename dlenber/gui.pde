@@ -30,7 +30,7 @@ void init_gui () {
 
   mode_box = new Checkbox(26,530,"WIREFRAME",5);
 
-  axis_box.check();
+  //axis_box.check();
   grid_box.check();
   rotation_box.check();
 

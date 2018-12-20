@@ -282,7 +282,7 @@ class Face {
     float Is = light.Ii * this.material.Ks * pow(cos_theta,this.material.alpha);
     //--------------------------------------------------------------------------
 
-    float[] illumination = {max(Ia,0),max(Id,0),max(Is,0)};
+    float[] illumination = {Ia,Id,Is};
 
     return illumination;
   }
@@ -432,6 +432,20 @@ class Face {
     my_fill_poly_gourard_3(illuminations,light,obj,points,this.pointIndexes,this.listSize,
       this.myColor, this.R, this.G, this.B
     );
+
+    // obj.render(selected,YELLOW,false);
+    if (selected) {
+      for (int i = 0; i < this.listSize; i++) {
+        stroke(YELLOW);
+        line(
+          points[this.pointIndexes[i]][0],
+          points[this.pointIndexes[i]][1],
+          points[this.pointIndexes[(i+1)%this.listSize]][0],
+          points[this.pointIndexes[(i+1)%this.listSize]][1]
+        );
+        stroke(fill_color);
+      }
+    }
 
     stroke(fill_color);
   }
