@@ -315,3 +315,8 @@ String[] read_file (String filename) {
   String[] lines = loadStrings(filename);
   return lines;
 }
+
+Float get_hsv(color c){
+   float hsv = hue(c);
+   return hsv;
+}
