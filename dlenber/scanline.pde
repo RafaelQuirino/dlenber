@@ -39,11 +39,11 @@ class Ponto implements Comparable<Ponto> {
 	}
 }
 
-void setup() {
+/*void setup() {
 	size(640, 640);
 	noSmooth();
     background(0);
-}
+}*/
 
 int get_number(int limit) {
 	return (int) random(limit);
@@ -78,7 +78,7 @@ int[][] get_polygon() {
 	return P;
 }
 
-void draw() {
+/*void draw() {
 	background(0);
 	int preenche = get_number(255) % 2;
 	color cor_linha = get_color();
@@ -91,13 +91,13 @@ void draw() {
 	}
 	scanline(P, L, cor_linha, (preenche == 0), cor_preenchimento);
 	delay(5000);
-}
+}*/
 
-void keyPressed() {
+/*void keyPressed() {
 	if (key == ESC) {
 		exit();
     }
-}
+}*/
 
 void linhaDDA(int xi, int yi, int xf, int yf) {
 	int dx = xf - xi;

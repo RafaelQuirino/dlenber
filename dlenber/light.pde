@@ -3,9 +3,7 @@ class Vector {
   double y;
   double z;
   
-  Vector(double _x, double _y, double _y) {
-    
-  }
+
 }
 
 class Light {
@@ -18,17 +16,10 @@ double dot(Vector L, Vector N) {
   return L.x * N.x + L.y * N.y + L.z * N.z;
 }
 
-double length(Vector L) {
-  
-}
-
-Vector cross(Vector L, Vector N) {
-  return new Vector(L.y * N.z - L.z * N.y, L.z * N.x - L.x * N.z, L.x * N.y - L.y * N.x);
-}
-
-Vector normalize() {
-  
-}
+//Vector cross(Vector L, Vector N) {
+  //return new Vector(L.y * N.z - L.z * N.y, L.z * N.x - L.x * N.z, L.x * N.y - L.y * N.x);
+//}
+/*
 
 color calc_ambient(double ka, color current) {
   double r = Math.round(red(current) * ka);
@@ -50,4 +41,4 @@ color calc_specular(int n, double ks, color current, Vector L, Vector N) {
 
 color gouraud(double ka, double kd, double ks, Vector L, Vector N, color current) {
   
-}
+}*/
