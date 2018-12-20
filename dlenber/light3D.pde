@@ -11,7 +11,7 @@ class Light3D {
 
 Light3D getStandardLight (float x, float y, float z) {
   Light3D light = new Light3D();
-  light.Ii = 2.0f;
+  light.Ii = 4.0f;
   light.R = 255;
   light.G = 255;
   light.B = 255;

@@ -100,8 +100,33 @@ class Face {
     this.avgZ = avg/(float)this.listSize;
   }
 
-  Face[] getNeighborFaces (Object3D obj) {
-    Face[] neighbors = new Face[1];
+  boolean itsMe (Face face) {
+    if (face.listSize != this.listSize)
+      return false;
+    for (int i = 0; i < this.listSize; i++)
+      if (this.pointIndexes[i] != face.pointIndexes[i])
+        return false;
+    return true;
+  }
+
+  boolean hasVertex (int vertex) {
+    for (int i = 0; i < this.listSize; i++)
+      if (this.pointIndexes[i] == vertex)
+        return true;
+    return false;
+  }
+
+  Face[] getNeighborFaces (Object3D obj, int vertex) {
+    Face[] neighbors_tmp = new Face[obj.faces.length];
+    int size = 0;
+    for (int i = 0; i < obj.faces.length; i++) {
+      Face f = obj.faces[i];
+      if (f.hasVertex(vertex) && !this.itsMe(f))
+        neighbors_tmp[size++] = f;
+    }
+    Face[] neighbors = new Face[size];
+    for (int i = 0; i < size; i++)
+      neighbors[i] = neighbors_tmp[i];
 
     return neighbors;
   }
@@ -168,6 +193,91 @@ class Face {
     return illumination;
   }
 
+  float calculatePhongIlluminationNormal (Observer3D obsv, Light3D light, float[][] points, float[] normal) {
+    // Parameters
+    float Iamb = 0.8; // Ambiente light intensity
+    int v = this.pointIndexes[1];
+    float px = points[v][0];
+    float py = points[v][1];
+    float pz = points[v][2];
+    float obsvx  = obsv.x;
+    float obsvy  = obsv.y;
+    float obsvz  = obsv.z;
+    float lightx = light.lamp.points[0][0];
+    float lighty = light.lamp.points[0][1];
+    float lightz = light.lamp.points[0][2];
+
+    // Calculate vectors L, N, V, cos(theta) -----------------------------------
+    float[] L = {(lightx-px), (lighty-py), (lightz-pz)};
+    normalize_vector(L);
+    float[] N = normal;
+    normalize_vector(N);
+    float[] V = {(obsvx-px), (obsvy-py), (obsvz-pz)};
+    normalize_vector(V);
+
+    float cos_theta = cos_vectors(N,L);
+    float theta = acos(cos_theta);
+
+    // float cos_theta = cos(PI/6.0);
+    //--------------------------------------------------------------------------
+
+    // Ambient -----------------------------------------------------------------
+    float Ia = this.material.Ka * Iamb;
+    //--------------------------------------------------------------------------
+
+    // Diffuse -----------------------------------------------------------------
+    float Id = this.material.Kd * light.Ii * cos_theta;
+    //--------------------------------------------------------------------------
+
+    // Specular ----------------------------------------------------------------
+    float Is = light.Ii * this.material.Ks * pow(cos_theta,this.material.alpha);
+    //--------------------------------------------------------------------------
+
+    float illumination = Ia + Id + Is;
+    if (illumination < 0) illumination = 0;
+
+    return illumination;
+  }
+
+  float[][] calculateVertexNormals (Object3D obj) {
+    float[][] Na_vertices = new float[this.listSize][3];
+    for (int i = 0; i < this.listSize; i++) {
+      int vertex = this.pointIndexes[i];
+      Face[] neighbors = getNeighborFaces(obj,vertex);
+      float[][] neighbors_normals = new float[neighbors.length][3];
+      for (int j = 0; j < neighbors.length; j++) {
+        float[] normal = neighbors[j].calculateNormal(obj.points);
+        neighbors_normals[j][0] = normal[0];
+        neighbors_normals[j][1] = normal[1];
+        neighbors_normals[j][2] = normal[2];
+      }
+      float xsum = 0.0f, ysum = 0.0f, zsum = 0.0f;
+      for (int j = 0; j < neighbors.length; j++) {
+        xsum += neighbors_normals[j][0];
+        ysum += neighbors_normals[j][1];
+        zsum += neighbors_normals[j][2];
+      }
+      float[] Nsum = {xsum,ysum,zsum};
+      float magNsum = magnitude_vector(Nsum);
+      float[] Na = {xsum/magNsum, ysum/magNsum, zsum/magNsum};
+      Na_vertices[i][0] = Na[0];
+      Na_vertices[i][1] = Na[1];
+      Na_vertices[i][2] = Na[2];
+    }
+
+    return Na_vertices;
+  }
+
+  float[] calculateVertexIlluminations (Observer3D obsv, Light3D light, Object3D obj) {
+    float[][] normals = calculateVertexNormals(obj);
+    float[] illuminations = new float[normals.length];
+    for (int i = 0; i < normals.length; i++) {
+      illuminations[i] = calculatePhongIlluminationNormal(obsv,light,obj.points,normals[i]);
+    }
+
+    return illuminations;
+  }
+
   void render (float[][] points, boolean selected) {
     // Calling fill polygon in algorithms.pdf ----------------------------------
     if (selected) stroke(YELLOW);
@@ -204,9 +314,46 @@ class Face {
     // int[] rgb = shade_color(this.R,this.G,this.B,illumination);
 
     color c = color((int)rgb[0],(int)rgb[1],(int)rgb[2]);
-    my_fill_poly(points,this.pointIndexes,this.listSize,c);
+    // my_fill_poly(points,this.pointIndexes,this.listSize,c);
+    my_fill_poly_scanline(points,this.pointIndexes,this.listSize,c);
 
     stroke(fill_color);
     //--------------------------------------------------------------------------
+  }
+
+  void render_3 (
+    Observer3D obsv, Light3D light, Object3D obj, float[][] points, boolean selected, float illumination
+  )
+  {
+    if (selected) stroke(YELLOW);
+    else          stroke(this.myColor);
+
+    // float[] rgb = shade_color(this.R,this.G,this.B,illumination);
+    // color c = color((int)rgb[0],(int)rgb[1],(int)rgb[2]);
+    float[] illuminations = calculateVertexIlluminations (obsv,light,obj);
+
+    my_fill_poly_gourard(illuminations,obj,points,this.pointIndexes,this.listSize,
+      this.myColor, this.R, this.G, this.B
+    );
+
+    stroke(fill_color);
+  }
+
+  void render_4 (
+    Observer3D obsv, Light3D light, Object3D obj, float[][] points, boolean selected, float illumination
+  )
+  {
+    if (selected) stroke(YELLOW);
+    else          stroke(this.myColor);
+
+    // float[] rgb = shade_color(this.R,this.G,this.B,illumination);
+    // color c = color((int)rgb[0],(int)rgb[1],(int)rgb[2]);
+    float[] illuminations = calculateVertexIlluminations (obsv,light,obj);
+
+    my_fill_poly_gourard_2(illuminations,obj,points,this.pointIndexes,this.listSize,
+      this.myColor, this.R, this.G, this.B
+    );
+
+    stroke(fill_color);
   }
 }

@@ -351,6 +351,14 @@ float cos_vectors (float[] u, float[] v) {
   return dot_vectors(u,v) / (magu*magv);
 }
 
+float dist_vectors (float[] u, float[] v) {
+  float sum = 0.0f;
+  for (int i = 0; i < u.length; i++) {
+    sum += pow((u[i]-v[i]),2);
+  }
+  return sqrt(sum);
+}
+
 void print_vector (float[] vector) {
   String s = "[";
   for (int i = 0; i < vector.length-1; i++)
@@ -426,7 +434,7 @@ void print_separator() {
 
 float[] shade_color (int r, int g, int b, float illumination) {
   float[] rgb = new float[3];
-  float l = illumination+0.2;
+  float l = illumination+0.1;
   // float l = illumination > 0.5 ? 1+(illumination-0.5) : illumination;
   rgb[0] = ((float)r)*(l);
   rgb[1] = ((float)g)*(l);

@@ -285,6 +285,7 @@ class Universe {
     this.grid.updateRotationUniverse(axis,dir,this.dr);
     this.axis.updateRotationUniverse(axis,dir,this.dr);
     this.updateRotationObservers(axis,dir,this.dr);
+    this.light.lamp.updateRotationUniverse(axis,dir,this.dr);
     for (int i = 0; i < this.numObjects; i++)
       this.objects[i].updateRotationUniverse(axis,dir,this.dr);
   }
@@ -420,7 +421,13 @@ class Universe {
 
           boolean selected = objIds[i] == this.selectedObject ? true : false;
           // faces[i].render(this.objects[objIds[i]].projection,selected);
-          faces[i].render_2(this.objects[objIds[i]].projection,selected,illumination);
+          // faces[i].render_2(this.objects[objIds[i]].projection,selected,illumination);
+          // faces[i].render_3(
+          //   obsv,light,this.objects[objIds[i]],this.objects[objIds[i]].projection,selected,illumination
+          // );
+          faces[i].render_4(
+            obsv,light,this.objects[objIds[i]],this.objects[objIds[i]].projection,selected,illumination
+          );
         }
       }
       // exit();
