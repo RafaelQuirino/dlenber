@@ -344,6 +344,20 @@ class Face {
     if (selected) stroke(YELLOW);
     else          stroke(this.myColor);
     my_fill_poly(points,this.pointIndexes,this.listSize,this.myColor);
+
+    if (selected) {
+      for (int i = 0; i < this.listSize; i++) {
+        stroke(YELLOW);
+        line(
+          points[this.pointIndexes[i]][0],
+          points[this.pointIndexes[i]][1],
+          points[this.pointIndexes[(i+1)%this.listSize]][0],
+          points[this.pointIndexes[(i+1)%this.listSize]][1]
+        );
+        stroke(fill_color);
+      }
+    }
+    
     stroke(fill_color);
     //--------------------------------------------------------------------------
   }
@@ -378,6 +392,19 @@ class Face {
     // my_fill_poly(points,this.pointIndexes,this.listSize,c);
     my_fill_poly_scanline(points,this.pointIndexes,this.listSize,c);
 
+    if (selected) {
+      for (int i = 0; i < this.listSize; i++) {
+        stroke(YELLOW);
+        line(
+          points[this.pointIndexes[i]][0],
+          points[this.pointIndexes[i]][1],
+          points[this.pointIndexes[(i+1)%this.listSize]][0],
+          points[this.pointIndexes[(i+1)%this.listSize]][1]
+        );
+        stroke(fill_color);
+      }
+    }
+
     stroke(fill_color);
     //--------------------------------------------------------------------------
   }
@@ -397,6 +424,19 @@ class Face {
       this.myColor, this.R, this.G, this.B
     );
 
+    if (selected) {
+      for (int i = 0; i < this.listSize; i++) {
+        stroke(YELLOW);
+        line(
+          points[this.pointIndexes[i]][0],
+          points[this.pointIndexes[i]][1],
+          points[this.pointIndexes[(i+1)%this.listSize]][0],
+          points[this.pointIndexes[(i+1)%this.listSize]][1]
+        );
+        stroke(fill_color);
+      }
+    }
+
     stroke(fill_color);
   }
 
@@ -414,6 +454,19 @@ class Face {
     my_fill_poly_gourard_2(illuminations,obj,points,this.pointIndexes,this.listSize,
       this.myColor, this.R, this.G, this.B
     );
+
+    if (selected) {
+      for (int i = 0; i < this.listSize; i++) {
+        stroke(YELLOW);
+        line(
+          points[this.pointIndexes[i]][0],
+          points[this.pointIndexes[i]][1],
+          points[this.pointIndexes[(i+1)%this.listSize]][0],
+          points[this.pointIndexes[(i+1)%this.listSize]][1]
+        );
+        stroke(fill_color);
+      }
+    }
 
     stroke(fill_color);
   }
@@ -446,7 +499,6 @@ class Face {
         stroke(fill_color);
       }
     }
-
     stroke(fill_color);
   }
 }

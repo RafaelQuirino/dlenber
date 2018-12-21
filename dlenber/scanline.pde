@@ -407,7 +407,8 @@ void my_fill_poly_gourard_3(
         float illumination_diff = l_diff/dist_sum;
         float illumination_spec = l_spec/dist_sum;
 
-        float[] rgb = shade_color(r,g,b,illumination_diff);
+				// float[] rgb = shade_color(r,g,b,illumination_diff);
+				int[] rgb = shade_color_2(r,g,b,illumination_diff);
         color c = interpolate_colors(
           (int)rgb[0],
           (int)rgb[1],

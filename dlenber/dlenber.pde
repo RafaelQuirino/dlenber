@@ -40,6 +40,7 @@ int counter = 0;
 int limit   = FPS;
 float fps      = FPS;
 float last_fps = FPS;
+int render_type = 5;
 
 void draw () {
   long t0 = System.nanoTime();
@@ -50,7 +51,7 @@ void draw () {
   // Render 1 of each 2 frames...
   if (flag == 0) {
     background(back_color);
-    universe.render();
+    universe.render(render_type);
     render_gui(last_fps);
   }
   //-------------------------------------------------------

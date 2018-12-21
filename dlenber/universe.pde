@@ -371,7 +371,7 @@ class Universe {
     print("\n");
   }
 
-  void render () {
+  void render (int render_type) {
     // Here, axis must be rendered after grid...
     if (this.showGrid) this.grid.render(false,0,true);
     if (this.showAxis) this.axis.render(false,0,true);
@@ -416,12 +416,13 @@ class Universe {
           Observer3D obsv  = chooseObserver3D();
           Light3D light    = this.light;
           float[][] points = this.objects[objIds[i]].points;
-          float illumination = faces[i].calculatePhongIllumination(obsv,light,points);
+          float illumination = 0.0f;
+          // float illumination = faces[i].calculatePhongIllumination(obsv,light,points);
           // print("Phong: " + illumination + "\n");
 
           boolean selected = objIds[i] == this.selectedObject ? true : false;
 
-          int render_type = 5;
+          //int render_type = 5;
 
           if (render_type == 1) {
             faces[i].render(this.objects[objIds[i]].projection,selected);
